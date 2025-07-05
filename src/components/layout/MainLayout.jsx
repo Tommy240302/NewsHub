@@ -9,21 +9,9 @@ const MainLayout = ({ children }) => {
     <>
       <Navbar />
       <Layout style={{ paddingTop: NAVBAR_HEIGHT_PX, minHeight: '100vh' }}>
-        <Sider
-          width={200}
-          style={{
-            background: '#fff',
-            position: 'fixed',
-            top: NAVBAR_HEIGHT_PX,
-            left: 0,
-            bottom: 0,
-            overflow: 'auto',
-          }}
-        >
-          <Sidebar />
-        </Sider>
+      
 
-        <Layout style={{ marginLeft: 200, padding: '24px' }}>
+        <Layout style={{  padding: '24px' }}>
           <Content
             style={{
               background: '#fff',

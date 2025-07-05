@@ -3,7 +3,9 @@ import MainLayout from './components/layout/MainLayout';
 import HomePage from './features/home/HomePage';
 import AboutPage from './features/about/AboutPage';
 import ContactPage from './features/contact/ContactPage';
+
 import './App.css';
+import Login from './features/auth/login';
 
 function App() {
   return (
@@ -13,6 +15,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </MainLayout>
     </Router>
