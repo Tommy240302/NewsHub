@@ -6,6 +6,7 @@ import ContactPage from './features/contact/ContactPage';
 
 import './App.css';
 import Login from './features/auth/login';
+import SignUp from './features/auth/SignUp';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp/>}/>
         </Routes>
       </MainLayout>
     </Router>

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import './Login.css';
 import { authAPI } from '../../common/api';
 import { SUCCESS_STATUS, FAIL_STATUS } from '../../common/variable-const';
-
+import { Button } from 'antd';
 // Login ( component ) // arrow function // là 1 loại hàm trong js
 // Login cơ bản là 1 function 
 
@@ -165,7 +165,7 @@ const Login = () => {
         <div className="login-footer">
           <p>
             Chưa có tài khoản?{' '}
-            <Link to="/register" className="register-link">
+            <Link to="/signup" className="register-link">
               Đăng ký ngay
             </Link>
           </p>
