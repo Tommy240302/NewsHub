@@ -8,8 +8,23 @@ import {
   PictureOutlined,
 } from '@ant-design/icons';
 
+const NAVBAR_HEIGHT_PX = 64; 
+const SIDEBAR_WIDTH = 200;
 const Sidebar = () => {
   return (
+    <div
+      style={{
+        position: 'fixed',
+        top: NAVBAR_HEIGHT_PX,
+        left: 0,
+        height: `calc(100vh - ${NAVBAR_HEIGHT_PX}px)`,
+        width: SIDEBAR_WIDTH,
+        background: '#fff',
+        borderRight: '1px solid #f0f0f0',
+        overflowY: 'auto',
+        zIndex: 100,
+      }}
+    >
     <Menu
       mode="inline"
       defaultSelectedKeys={['home']}
@@ -23,6 +38,7 @@ const Sidebar = () => {
         { key: 'tech', icon: <PictureOutlined />, label: 'Công nghệ' },
       ]}
     />
+    </div>
   );
 };
 

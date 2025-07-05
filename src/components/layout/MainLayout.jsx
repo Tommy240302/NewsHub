@@ -8,9 +8,17 @@ const MainLayout = ({ children }) => {
   return (
     <>
       <Navbar />
-      <Layout style={{ paddingTop: NAVBAR_HEIGHT_PX, minHeight: '100vh' }}>
       
-
+      <Layout style={{ paddingTop: NAVBAR_HEIGHT_PX, minHeight: '100vh' }}>
+        <Sider
+          width={200}
+          style={{
+            background: '#fff',
+            borderRight: '1px solid #f0f0f0',
+          }}
+        >
+          <Sidebar />
+        </Sider>
         <Layout style={{  padding: '24px' }}>
           <Content
             style={{
