@@ -1,95 +1,149 @@
-import React from 'react';
-import { Form, Input, Button, Checkbox, Typography, Card } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Card, Typography, Checkbox, Button } from 'antd';
+import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import './SignUp.css'; 
+import './SignUp.css';
 
 const { Title, Text } = Typography;
 
-const SignUp = () => {
-  const [form] = Form.useForm();
+const Signup = () => {
+  const [formData, setFormData] = useState({
+    fullname: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    agree: false,
+  });
 
-  const onFinish = (values) => {
-    console.log('Dữ liệu đăng ký:', values);
-    // TODO: Gửi dữ liệu đến backend ở đây
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!formData.fullname || !formData.email || !formData.password || !formData.confirmPassword) {
+      alert('Vui lòng điền đầy đủ thông tin!');
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      alert('Mật khẩu xác nhận không khớp!');
+      return;
+    }
+
+    if (!formData.agree) {
+      alert('Bạn cần đồng ý với các điều khoản!');
+      return;
+    }
+
+    // Submit logic ở đây
+    console.log('Dữ liệu đăng ký:', formData);
   };
 
   return (
     <div className="signup-container">
-      <Card className="signup-card">
-        <Title level={2} className="signup-title">Đăng ký</Title>
-        <Text className="signup-subtitle">Tạo tài khoản mới để bắt đầu trải nghiệm</Text>
+      <div className="signup-card">
+        <div className="signup-header">
+          <h1>Đăng Kí</h1>
+          <p>Tạo tài khoản mới để bắt đầu trải nghiệm</p>
+        </div>
 
-        <Form
-          form={form}
-          name="signup"
-          layout="vertical"
-          onFinish={onFinish}
-          requiredMark={false}
-        >
-          <Form.Item
-            label="Họ và tên"
-            name="fullname"
-            rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
-          >
-            <Input placeholder="Nhập họ và tên" prefix={<UserOutlined />} />
-          </Form.Item>
+        <form onSubmit={handleSubmit} className='sign-up-form'>
+          <div className="form-group">
+            <label>Họ và tên</label>
+            <div className="input-wrapper">
 
-          <Form.Item
-            label="Email"
-            name="email"
-            rules={[
-              { required: true, message: 'Vui lòng nhập email!' },
-              { type: 'email', message: 'Email không hợp lệ!' },
-            ]}
-          >
-            <Input placeholder="Nhập email của bạn" prefix={<MailOutlined />} />
-          </Form.Item>
+              <input
+                type="text"
+                name="fullname"
+                placeholder="Nhập họ và tên"
+                value={formData.fullname}
+                onChange={handleChange}
+                required
+                className="form-input"
+              />
 
-          <Form.Item
-            label="Mật khẩu"
-            name="password"
-            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
-          >
-            <Input.Password placeholder="Nhập mật khẩu của bạn" prefix={<LockOutlined />} />
-          </Form.Item>
+            </div>
+          </div>
 
-          <Form.Item
-            label="Xác nhận mật khẩu"
-            name="confirmPassword"
-            dependencies={['password']}
-            rules={[
-              { required: true, message: 'Vui lòng xác nhận mật khẩu!' },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue('password') === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('Mật khẩu xác nhận không khớp!'));
-                },
-              }),
-            ]}
-          >
-            <Input.Password placeholder="Nhập lại mật khẩu" prefix={<LockOutlined />} />
-          </Form.Item>
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <div className="input-wrapper">
 
-          <Form.Item name="agree" valuePropName="checked">
-            <Checkbox>Tôi đồng ý với các điều khoản</Checkbox>
-          </Form.Item>
+              <input
+                type="email"
+                name="email"
+                placeholder="Nhập email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="form-input"
+              />
+            </div>
+          </div>
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit" block>
-              Đăng ký
-            </Button>
-          </Form.Item>
+          <div className="form-group">
+            <label>Mật khẩu</label>
+            <div className="input-wrapper">
+
+              <input
+                type="password"
+                name="password"
+                placeholder="Nhập mật khẩu"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="form-input"
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Xác nhận mật khẩu</label>
+            <div className="input-wrapper">
+
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Nhập lại mật khẩu"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                className="form-input"
+              />
+            </div>
+          </div>
+
+          <div className="check-options">
+            <Checkbox
+              name="agree"
+              checked={formData.agree}
+              onChange={handleChange}
+            >
+              Tôi đồng ý với các điều khoản
+            </Checkbox>
+          </div>
+
+          <Button type="primary" htmlType="submit" block className='signup-button'>
+            Đăng ký
+          </Button>
 
           <div className="signup-footer">
-            <Text>Đã có tài khoản? <Link to="/login">Đăng nhập</Link></Text>
+            <p>Đã có tài khoản?{' '}
+              <Link to="/login" className='register-link'>
+                Đăng nhập
+              </Link>
+            </p>
           </div>
-        </Form>
-      </Card>
+        </form>
+      </div>
     </div>
   );
 };
 
-export default SignUp;
+export default Signup;

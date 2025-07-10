@@ -10,12 +10,14 @@ import ContactPage from './features/contact/ContactPage';
 
 import Login from './features/auth/Login';
 import SignUp from './features/auth/SignUp';
+import HotNews from './features/pages/HotNews';
+import TrendNews from './features/pages/TrendNews'; 
 
 import AdminLoginPage from './features/admin/loginAdmin/AdminLoginPage';
 import DashboardAdmin from './features/admin/dashboardAdmin/DashboardAdmin';
 import PostsAD from './features/admin/postsAdmin/PostsAD';
 import UsersAD from './features/admin/usersAdmin/UsersAD';
-import StatisticsAD from './features/admin/statisticsAdmin/StatisticsAD'; 
+import StatisticsAD from './features/admin/statisticsAdmin/StatisticsAD';
 
 import ProtectedRoute from './utils/ProtectedRoute';
 
@@ -23,37 +25,42 @@ import './App.css';
 
 function App() {
   return (
-    <>
+    <> 
       <Routes>
+        
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="contact" element={<ContactPage />} />
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<SignUp />} />
+          <Route path="hotnews" element={<HotNews />} />
+          <Route path="trendnews" element={<TrendNews />} />
         </Route>
 
+        
         <Route path="/admin/login" element={<AdminLoginPage />} />
-
-        <Route element={<ProtectedRoute />}>
+        <Route element={<ProtectedRoute />}> 
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<DashboardAdmin />} />
             <Route path="dashboard" element={<DashboardAdmin />} />
             <Route path="posts" element={<PostsAD />} />
             <Route path="users" element={<UsersAD />} />
-            <Route path="statistics" element={<StatisticsAD />} /> 
+            <Route path="statistics" element={<StatisticsAD />} />
           </Route>
         </Route>
 
+        {/* Trang 404 */}
         <Route path="*" element={
           <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h1>404 - Page Not Found</h1>
-            <p>The page you are looking for does not exist.</p>
-            <a href="/">Go to Home</a>
+            <h1>404 - Không tìm thấy trang</h1>
+            <p>Trang bạn đang tìm kiếm không tồn tại.</p>
+            <a href="/">Về trang chủ</a>
           </div>
         } />
       </Routes>
     </>
   );
 }
-export default App; 
+
+export default App;
