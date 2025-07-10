@@ -19,7 +19,7 @@ import {
   FileTextOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
-import InlineRichTextEditor from "./RichText";
+import InlineRichTextEditor from "../../components/ui/RichText";
 
 const { TextArea } = Input;
 const { Title, Text } = Typography;
