@@ -1,0 +1,59 @@
+/* src/pages/TrendNews.css */
+
+.trend-news-container {
+  padding: 24px;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
+
+.trend-news-title {
+  color: #722ed1;
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.trend-news-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.trend-news-card {
+  width: 300px;
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.trend-news-card:hover {
+  transform: translateY(-6px);
+}
+
+.trend-news-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.trend-news-info {
+  padding: 16px;
+}
+
+.trend-news-tag {
+  display: inline-block;
+  background-color: #e6f7ff;
+  color: #1890ff;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.trend-news-heading {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}

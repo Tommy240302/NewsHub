@@ -14,7 +14,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    rememberMe: false
+    isremember: false
   });
   // Biến trong component 
   
@@ -31,18 +31,24 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("ĐĂNG NHẬP"); 
-    console.log(formData); 
-    console.log(setIsLoading); 
+    const payload = {
+      email: formData.email, password : formData.password, isremember: formData.isremember
+    }
+    console.log("RUN ... ")
 
     // formData => dữ liệu gửi xuống backend 
 
-    const response = await authAPI.login(formData);
-    const { status, message, errorMessage } = response;  
+    const response = await authAPI.login(payload);
+    const { status, data, errorMessage } = response; 
+    console.log( data);
+
 
 
     if (status === SUCCESS_STATUS) {
       alert(message); 
+      // lay ra dk token 
+
+      
     }
     else if (status === FAIL_STATUS) {
       alert(errorMessage); 
@@ -123,8 +129,8 @@ const Login = () => {
             <label className="checkbox-wrapper">
               <input
                 type="checkbox"
-                name="rememberMe"
-                checked={formData.rememberMe}
+                name="isremember"
+                checked={formData.isremember}
                 onChange={handleInputChange}
                 className="checkbox-input"
               />

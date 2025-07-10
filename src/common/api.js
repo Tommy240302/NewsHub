@@ -55,7 +55,7 @@ api.interceptors.response.use(
 // API functions
 export const authAPI = {
   // Đăng nhập
-  login: (credentials) => api.post('/auth/login', credentials),
+  login: (credentials) => api.post('/auth/sign-in', credentials),
   
   // Đăng ký
   register: (userData) => api.post('/auth/register', userData),
