@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import MainLayout from './components/layout/MainLayout';
 import AdminLayout from './components/layout/AdminLayout';
@@ -8,10 +8,10 @@ import HomePage from './features/home/HomePage';
 import AboutPage from './features/about/AboutPage';
 import ContactPage from './features/contact/ContactPage';
 
-import Login from './features/auth/Login';
+import Login from './features/auth/Login'; // Ensure this path is consistent
 import SignUp from './features/auth/SignUp';
 import HotNews from './features/pages/HotNews';
-import TrendNews from './features/pages/TrendNews'; 
+import TrendNews from './features/pages/TrendNews';
 
 import AdminLoginPage from './features/admin/loginAdmin/AdminLoginPage';
 import DashboardAdmin from './features/admin/dashboardAdmin/DashboardAdmin';
@@ -25,9 +25,9 @@ import './App.css';
 
 function App() {
   return (
-    <> 
+    <Router>
       <Routes>
-        
+        {/* Public User Layout */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="about" element={<AboutPage />} />
@@ -38,9 +38,11 @@ function App() {
           <Route path="trendnews" element={<TrendNews />} />
         </Route>
 
-        
+        {/* Admin Login */}
         <Route path="/admin/login" element={<AdminLoginPage />} />
-        <Route element={<ProtectedRoute />}> 
+
+        {/* Protected Admin Routes */}
+        <Route element={<ProtectedRoute />}>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<DashboardAdmin />} />
             <Route path="dashboard" element={<DashboardAdmin />} />
@@ -50,16 +52,19 @@ function App() {
           </Route>
         </Route>
 
-        {/* Trang 404 */}
-        <Route path="*" element={
-          <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h1>404 - Không tìm thấy trang</h1>
-            <p>Trang bạn đang tìm kiếm không tồn tại.</p>
-            <a href="/">Về trang chủ</a>
-          </div>
-        } />
+        {/* 404 Page */}
+        <Route
+          path="*"
+          element={
+            <div style={{ textAlign: 'center', marginTop: '50px' }}>
+              <h1>404 - Không tìm thấy trang</h1>
+              <p>Trang bạn đang tìm kiếm không tồn tại.</p>
+              <a href="/">Về trang chủ</a>
+            </div>
+          }
+        />
       </Routes>
-    </>
+    </Router>
   );
 }
 
