@@ -1,14 +1,15 @@
 import { Layout } from 'antd';
 import Navbar, { NAVBAR_HEIGHT_PX } from './Navbar';
 import Sidebar from './Sidebar';
+import { Outlet } from 'react-router-dom'; 
 
 const { Content, Sider } = Layout;
 
-const MainLayout = ({ children }) => {
+const MainLayout = () => { 
   return (
     <>
       <Navbar />
-      
+
       <Layout style={{ paddingTop: NAVBAR_HEIGHT_PX, minHeight: '100vh' }}>
         <Sider
           width={200}
@@ -19,7 +20,7 @@ const MainLayout = ({ children }) => {
         >
           <Sidebar />
         </Sider>
-        <Layout style={{  padding: '24px' }}>
+        <Layout style={{ padding: '24px' }}>
           <Content
             style={{
               background: '#fff',
@@ -27,12 +28,11 @@ const MainLayout = ({ children }) => {
               minHeight: 280,
             }}
           >
-            {children}
+            <Outlet /> {/* <-- THAY THẾ {children} BẰNG <Outlet /> */}
           </Content>
         </Layout>
       </Layout>
     </>
   );
 };
-
-export default MainLayout;
+export default MainLayout; 
