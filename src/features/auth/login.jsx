@@ -4,6 +4,7 @@ import './Login.css';
 import { authAPI } from '../../common/api';
 import { SUCCESS_STATUS, FAIL_STATUS } from '../../common/variable-const';
 import { Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
 // Login ( component ) // arrow function // là 1 loại hàm trong js
 // Login cơ bản là 1 function 
 
@@ -11,13 +12,14 @@ import { Button } from 'antd';
 
 
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     isremember: false
   });
   // Biến trong component 
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,29 +34,38 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = {
-      email: formData.email, password : formData.password, isremember: formData.isremember
+      email: formData.email, password: formData.password, isremember: formData.isremember
     }
     console.log("RUN ... ")
 
     // formData => dữ liệu gửi xuống backend 
 
     const response = await authAPI.login(payload);
-    const { status, data, errorMessage } = response; 
-    console.log( data);
+    const { status, data, errorMessage } = response;
+    console.log(data);
+
+
 
 
 
     if (status === SUCCESS_STATUS) {
-      alert(message); 
-      // lay ra dk token 
+      const token = data?.token;// lay ra dk token 
+      if (token) {
+        localStorage.setItem("token", token); //Lưu token vào localStorage
+      }
 
-      
+      alert("Đăng nhập thành công");
+      navigate("/home");
+
+
+
+
     }
     else if (status === FAIL_STATUS) {
-      alert(errorMessage); 
+      alert(errorMessage);
 
     }
-    console.log(response); 
+    console.log(response);
   };
 
   const handleForgotPassword = () => {
@@ -137,7 +148,7 @@ const Login = () => {
               <span className="checkbox-custom"></span>
               <span className="checkbox-label">Nhớ mật khẩu</span>
             </label>
-            
+
             <button
               type="button"
               onClick={handleForgotPassword}
@@ -156,8 +167,8 @@ const Login = () => {
               <>
                 <svg className="spinner" viewBox="0 0 24 24">
                   <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" strokeDasharray="31.416" strokeDashoffset="31.416">
-                    <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416" repeatCount="indefinite"/>
-                    <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416" repeatCount="indefinite"/>
+                    <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416" repeatCount="indefinite" />
+                    <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416" repeatCount="indefinite" />
                   </circle>
                 </svg>
                 Đang đăng nhập...

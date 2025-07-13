@@ -3,15 +3,25 @@ import { Card, Typography, Checkbox, Button } from 'antd';
 import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import './SignUp.css';
+import { useNavigate } from 'react-router-dom';
+import { authAPI } from '../../common/api';
+import { SUCCESS_STATUS, FAIL_STATUS } from '../../common/variable-const';
+import { Phone } from '@mui/icons-material';
+import axios from 'axios';
+
 
 const { Title, Text } = Typography;
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fullname: '',
+    firstName: '',
+  lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
+    phone: '',
+    avatar: '',
     agree: false,
   });
 
@@ -23,10 +33,10 @@ const Signup = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.fullname || !formData.email || !formData.password || !formData.confirmPassword) {
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.confirmPassword) {
       alert('Vui lòng điền đầy đủ thông tin!');
       return;
     }
@@ -41,6 +51,30 @@ const Signup = () => {
       return;
     }
 
+    const payload = {
+    email: formData.email,
+    password: formData.password,
+    firstName: formData.firstName,
+    lastName: formData.lastName,
+    phone: formData.phone || "",
+    avatar: formData.avatar || "",
+    
+  };
+  axios.post("http://localhost:6969/api/auth/register", payload)
+
+    try { 
+    const response = await authAPI.register(payload);
+
+    if (response.status === SUCCESS_STATUS) {
+      alert('Đăng ký thành công!');
+      navigate('/home'); 
+    } else {
+      alert(response.errorMessage || 'Đăng ký thất bại!');
+    }
+  } catch (error) {
+    console.error('Đăng ký lỗi:', error);
+    alert('Có lỗi xảy ra khi đăng ký!');
+  }
     // Submit logic ở đây
     console.log('Dữ liệu đăng ký:', formData);
   };
@@ -55,19 +89,32 @@ const Signup = () => {
 
         <form onSubmit={handleSubmit} className='sign-up-form'>
           <div className="form-group">
-            <label>Họ và tên</label>
+            <label>Họ</label>
             <div className="input-wrapper">
-
               <input
                 type="text"
-                name="fullname"
-                placeholder="Nhập họ và tên"
-                value={formData.fullname}
+                name="firstName"
+                placeholder="Nhập họ"
+                value={formData.firstName}
                 onChange={handleChange}
                 required
                 className="form-input"
               />
+            </div>
+          </div>
 
+          <div className="form-group">
+            <label>Tên</label>
+            <div className="input-wrapper">
+              <input
+                type="text"
+                name="lastName"
+                placeholder="Nhập tên"
+                value={formData.lastName}
+                onChange={handleChange}
+                required
+                className="form-input"
+              />
             </div>
           </div>
 
