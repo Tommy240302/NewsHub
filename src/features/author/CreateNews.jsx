@@ -224,7 +224,7 @@ ${htmlContent}
   const handlePublishPost = async () => {
     try {
       const uploadPromises = [];
-      const updatedComponents = [];
+      const uploadedImages = [];
       let updatedMainImage = {};
 
       // Upload main image if exists
@@ -240,28 +240,17 @@ ${htmlContent}
       }
 
       // Upload component images
-      const componentImagePromises = components
-        .map(async (component, index) => {
-          if (component.type === "image") {
-            console.log(`Uploading component image ${index + 1}...`);
-            try {
-              const response = await uploadImage(
-                component.data.url,
-                component.data.alt || "component-image.jpg"
-              );
-              updatedComponents[index] = { uploadedUrl: response.url };
-              return response;
-            } catch (error) {
-              console.error(
-                `Failed to upload component image ${index + 1}:`,
-                error
-              );
-              throw error;
-            }
-          }
-          return null;
-        })
-        .filter(Boolean);
+      const componentImagePromises = components.map(async (component) => {
+        if (component.type === "image") {
+          const response = await uploadImage(
+            component.data.url,
+            component.data.alt || ""
+          );
+          uploadedImages.push({ uploadedUrl: response.url });
+          return response;
+        }
+        return null;
+      });
 
       uploadPromises.push(...componentImagePromises);
 
@@ -273,13 +262,13 @@ ${htmlContent}
       const unusedImages = images.filter(
         (img) => !usedImageIds.includes(img.url)
       );
-      console.log(`Found ${unusedImages.length} unused images in panel`);
+      // console.log(`Found ${unusedImages.length} unused images in panel`);
 
       // Wait for all uploads to complete
-      console.log(`Starting upload of ${uploadPromises.length} images...`);
+      // console.log(`Starting upload of ${uploadPromises.length} images...`);
       const uploadResults = await Promise.all(uploadPromises);
 
-      console.log("All images uploaded successfully!", uploadResults);
+      // console.log("All images uploaded successfully!", uploadResults);
 
       let imgIndex = 0;
 
@@ -291,7 +280,7 @@ ${htmlContent}
                 comp.data.content || ""
               }</div>`;
             case "image": {
-              const url = updatedComponents[imgIndex]?.uploadedUrl || "";
+              const url = uploadedImages[imgIndex]?.uploadedUrl || "";
               const alt = comp.data.alt || "";
               const caption = comp.data.caption || "";
               const html = `<div class="image-container">
@@ -310,7 +299,7 @@ ${htmlContent}
       const handleCreate = async () => {
         try {
           const content = fullHTMLGenerate(htmlContent);
-          const mainImageUrl = updatedMainImage.uploadedUrl;
+          const mainImageUrl = updatedMainImage?.uploadedUrl || null;
           const news = {
             title: title,
             summary: summary,
@@ -319,8 +308,9 @@ ${htmlContent}
             categoryId: 1,
           };
           const response = await authorAPI.createnews(news);
-          console.log("Tạo bài viết thành công:", response.data);
-          navigate("/dashboard");
+          // console.log("Tạo bài viết thành công:", response.data);
+          alert("tạo bài viết thành công");
+          // navigate("/successpublish");
         } catch (error) {
           console.error("Tạo bài viết thất bại:", error);
           alert("Đăng bài thất bại!");
