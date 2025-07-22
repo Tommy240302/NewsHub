@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, use } from "react";
+import { authorAPI } from "../../common/api";
 import {
   Button,
   Input,
@@ -20,6 +21,7 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import InlineRichTextEditor from "../../components/ui/RichText";
+import uploadImage from "../../services/imageKitUpload";
 
 const { TextArea } = Input;
 const { Title, Text } = Typography;
@@ -30,11 +32,15 @@ const CreateNews = () => {
   const [draggedItem, setDraggedItem] = useState(null);
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [images, setImages] = useState([]);
+  const [mainImage, setMainImage] = useState(null);
   const fileInputRef = useRef(null);
-  const h1Ref = useRef(null);
+  const mainImageInputRef = useRef(null);
+  const titleRef = useRef(null);
+  const summaryRef = useRef(null);
   const [title, setTitle] = useState("Tiêu đề");
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [previewHTML, setPreviewHTML] = useState("");
+  const [summary, setSummary] = useState("Tóm tắt");
 
   const categories = [
     {
@@ -57,7 +63,7 @@ const CreateNews = () => {
     e.dataTransfer.effectAllowed = "move";
   };
 
-  // Handle drag start from middle area (reordering)
+  // Handle drag start from middle area (reordering) - Only from drag handle
   const handleReorderDragStart = (e, index) => {
     setDraggedIndex(index);
     e.dataTransfer.effectAllowed = "move";
@@ -148,6 +154,29 @@ const CreateNews = () => {
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files);
     handleFileUploadFromFiles(files);
+    e.target.value = "";
+  };
+
+  // Handle main image upload
+  const handleMainImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setMainImage({
+          id: Date.now(),
+          name: file.name,
+          url: event.target.result,
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+    e.target.value = "";
+  };
+
+  // Remove main image
+  const removeMainImage = () => {
+    setMainImage(null);
   };
 
   // Remove image
@@ -169,9 +198,133 @@ const CreateNews = () => {
     updateComponent(componentId, { content });
   };
 
+  const fullHTMLGenerate = (htmlContent) => {
+    return `<!DOCTYPE html>
+<html>
+<head>
+  <title>Preview</title>
+  <style>
+    body { font-family: sans-serif; padding: 16px; }
+    .main-image-container { margin: 20px 0; text-align: center; }
+    .main-image { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .image-container { margin: 10px 0; }
+    .caption { font-style: italic; margin-top: 5px; color: #888; }
+    .rich-text-content { margin: 10px 0; line-height: 1.5; }
+    .summary {padding-left: 5px}
+  </style>
+</head>
+<body>
+<h1>${title}</h1>
+<h4 class="summary">${summary}</h4>
+${htmlContent}
+</body>
+</html>`;
+  };
+
+  const handlePublishPost = async () => {
+    try {
+      const uploadPromises = [];
+      const uploadedImages = [];
+      let updatedMainImage = {};
+
+      // Upload main image if exists
+      if (mainImage) {
+        const mainImagePromise = uploadImage(
+          mainImage.url,
+          mainImage.name
+        ).then((response) => {
+          updatedMainImage = { uploadedUrl: response.url };
+          return response;
+        });
+        uploadPromises.push(mainImagePromise);
+      }
+
+      // Upload component images
+      const componentImagePromises = components.map(async (component) => {
+        if (component.type === "image") {
+          const response = await uploadImage(
+            component.data.url,
+            component.data.alt || ""
+          );
+          uploadedImages.push({ uploadedUrl: response.url });
+          return response;
+        }
+        return null;
+      });
+
+      uploadPromises.push(...componentImagePromises);
+
+      // Upload all images images from the left panel that are being used
+      const usedImageIds = components
+        .filter((comp) => comp.type === "image")
+        .map((comp) => comp.data.url);
+
+      const unusedImages = images.filter(
+        (img) => !usedImageIds.includes(img.url)
+      );
+      // console.log(`Found ${unusedImages.length} unused images in panel`);
+
+      // Wait for all uploads to complete
+      // console.log(`Starting upload of ${uploadPromises.length} images...`);
+      const uploadResults = await Promise.all(uploadPromises);
+
+      // console.log("All images uploaded successfully!", uploadResults);
+
+      let imgIndex = 0;
+
+      const htmlContent = components
+        .map((comp) => {
+          switch (comp.type) {
+            case "richtext":
+              return `<div class="rich-text-content">${
+                comp.data.content || ""
+              }</div>`;
+            case "image": {
+              const url = uploadedImages[imgIndex]?.uploadedUrl || "";
+              const alt = comp.data.alt || "";
+              const caption = comp.data.caption || "";
+              const html = `<div class="image-container">
+      <img src="${url}" alt="${alt}" />
+      <p class="caption">${caption}</p>
+    </div>`;
+              imgIndex++;
+              return html;
+            }
+            default:
+              return "";
+          }
+        })
+        .join("\n");
+
+      const handleCreate = async () => {
+        try {
+          const content = fullHTMLGenerate(htmlContent);
+          const mainImageUrl = updatedMainImage?.uploadedUrl || null;
+          const news = {
+            title: title,
+            summary: summary,
+            content: content,
+            image: mainImageUrl,
+            categoryId: 1,
+          };
+          const response = await authorAPI.createnews(news);
+          // console.log("Tạo bài viết thành công:", response.data);
+          alert("tạo bài viết thành công");
+          // navigate("/successpublish");
+        } catch (error) {
+          console.error("Tạo bài viết thất bại:", error);
+          alert("Đăng bài thất bại!");
+        }
+      };
+      handleCreate();
+    } catch (error) {
+      console.error("Error publishing post:", error);
+      alert("Có lỗi xảy ra khi đăng bài. Vui lòng thử lại.");
+    }
+  };
+
   // Preview to HTML
   const handlePreview = () => {
-    console.log(components);
     const htmlContent = components
       .map((comp) => {
         switch (comp.type) {
@@ -190,402 +343,485 @@ const CreateNews = () => {
       })
       .join("\n");
 
-    const fullHTML = `<!DOCTYPE html>
-<html>
-<head>
-  <title>Preview</title>
-  <style>
-    body { font-family: sans-serif; padding: 16px; }
-    .image-container { margin: 10px 0; }
-    .caption { font-style: italic; margin-top: 5px; color: #888; }
-    .rich-text-content { margin: 10px 0; line-height: 1.5; }
-  </style>
-</head>
-<body>
-<h1>${title}</h1>
-${htmlContent}
-</body>
-</html>`;
+    const fullHTML = fullHTMLGenerate(htmlContent);
 
     setPreviewHTML(fullHTML);
     setIsPreviewVisible(true);
   };
 
   return (
-    <div style={{ height: "100vh", backgroundColor: "#f5f5f5" }}>
-      <Row style={{ height: "100%" }}>
-        {/* Left Panel - Components */}
-        <Col
-          span={5}
-          style={{
-            backgroundColor: "#fff",
-            borderLeft: "1px solid #d9d9d9",
-            textAlign: "center",
-            position: "sticky",
-            top: 0,
-            height: "100vh",
-            overflowY: "auto",
-            zIndex: 10,
-          }}
-        >
-          <div style={{ padding: "16px" }}>
-            <Title level={4}>Thành phần</Title>
+    <div
+      style={{ height: "100vh", backgroundColor: "#f5f5f5", display: "flex" }}
+    >
+      {/* Left Panel - Components - Fixed */}
+      <div
+        style={{
+          width: "20%", // Using fixed width instead of Col span
+          backgroundColor: "#fff",
+          borderRight: "1px solid #d9d9d9",
+          textAlign: "center",
+          position: "fixed",
+          left: 0,
+          top: 0,
+          height: "100vh",
+          overflowY: "auto",
+          zIndex: 10,
+        }}
+      >
+        <div style={{ padding: "16px" }}>
+          <Title level={4}>Thành phần</Title>
 
-            {/* Rich Text Component */}
-            <Card
-              size="small"
+          {/* Rich Text Component */}
+          <Card
+            size="small"
+            style={{
+              marginBottom: "16px",
+              backgroundColor: "#e6f7ff",
+              border: "1px solid #91d5ff",
+              cursor: "move",
+            }}
+            draggable
+            onDragStart={(e) => handleDragStart(e, "richtext")}
+          >
+            <Space>
+              <FileTextOutlined />
+              <Text strong>Rich Text</Text>
+            </Space>
+          </Card>
+
+          {/* Image Upload Area */}
+          <div style={{ marginBottom: "16px" }}>
+            <Text strong style={{ fontSize: "12px", color: "#666" }}>
+              Image Panel
+            </Text>
+            <div
               style={{
-                marginBottom: "16px",
-                backgroundColor: "#e6f7ff",
-                border: "1px solid #91d5ff",
-                cursor: "move",
+                border: "2px dashed #d9d9d9",
+                borderRadius: "6px",
+                padding: "16px",
+                textAlign: "center",
+                backgroundColor: "#fafafa",
+                marginTop: "8px",
+                cursor: "pointer",
               }}
-              draggable
-              onDragStart={(e) => handleDragStart(e, "richtext")}
+              onDrop={handleImageDrop}
+              onDragOver={handleImageDragOver}
+              onDragLeave={handleImageDragLeave}
+              onClick={() => fileInputRef.current?.click()}
             >
-              <Space>
-                <FileTextOutlined />
-                <Text strong>Rich Text</Text>
-              </Space>
-            </Card>
-
-            {/* Image Upload Area */}
-            <div style={{ marginBottom: "16px" }}>
-              <Text strong style={{ fontSize: "12px", color: "#666" }}>
-                Image Panel
-              </Text>
-              <div
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                accept="image/*"
+                multiple
+                style={{ display: "none" }}
+              />
+              <UploadOutlined
                 style={{
-                  border: "2px dashed #d9d9d9",
-                  borderRadius: "6px",
-                  padding: "16px",
-                  textAlign: "center",
-                  backgroundColor: "#fafafa",
-                  marginTop: "8px",
-                  cursor: "pointer",
+                  fontSize: "24px",
+                  color: "#bfbfbf",
+                  marginBottom: "8px",
                 }}
-                onDrop={handleImageDrop}
-                onDragOver={handleImageDragOver}
-                onDragLeave={handleImageDragLeave}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileUpload}
-                  accept="image/*"
-                  multiple
-                  style={{ display: "none" }}
-                />
-                <UploadOutlined
-                  style={{
-                    fontSize: "24px",
-                    color: "#bfbfbf",
-                    marginBottom: "8px",
-                  }}
-                />
-                <div style={{ fontSize: "12px", color: "#666" }}>
-                  Drop images here or click to upload
-                </div>
+              />
+              <div style={{ fontSize: "12px", color: "#666" }}>
+                Drop images here or click to upload
               </div>
             </div>
+          </div>
 
-            {/* Image Components */}
-            <div>
-              <Text strong style={{ fontSize: "12px", color: "#666" }}>
-                Uploaded Images
-              </Text>
-              <div
-                style={{
-                  maxHeight: "384px",
-                  overflowY: "auto",
-                  marginTop: "8px",
-                }}
-              >
-                {images.map((image) => (
-                  <Card
-                    key={image.id}
-                    size="small"
-                    style={{ marginBottom: "8px", backgroundColor: "#fafafa" }}
+          {/* Image Components */}
+          <div>
+            <Text strong style={{ fontSize: "12px", color: "#666" }}>
+              Uploaded Images
+            </Text>
+            <div
+              style={{
+                maxHeight: "384px",
+                overflowY: "auto",
+                marginTop: "8px",
+              }}
+            >
+              {images.map((image) => (
+                <Card
+                  key={image.id}
+                  size="small"
+                  style={{ marginBottom: "8px", backgroundColor: "#fafafa" }}
+                >
+                  <div
+                    style={{
+                      backgroundColor: "#f6ffed",
+                      padding: "8px",
+                      borderRadius: "4px",
+                      border: "1px solid #b7eb8f",
+                      cursor: "move",
+                      position: "relative",
+                    }}
+                    draggable
+                    onDragStart={(e) =>
+                      handleDragStart(e, "image", {
+                        url: image.url,
+                        alt: image.name,
+                        caption: image.caption,
+                      })
+                    }
                   >
-                    <div
+                    <img
+                      src={image.url}
+                      alt={image.name}
                       style={{
-                        backgroundColor: "#f6ffed",
-                        padding: "8px",
+                        width: "100%",
+                        height: "64px",
+                        objectFit: "cover",
                         borderRadius: "4px",
-                        border: "1px solid #b7eb8f",
+                        marginBottom: "4px",
+                      }}
+                    />
+                    <Space>
+                      <FileImageOutlined style={{ fontSize: "12px" }} />
+                      <Text
+                        ellipsis
+                        style={{
+                          fontSize: "12px",
+                          maxWidth: "100px",
+                          flex: 1,
+                        }}
+                      >
+                        {image.name}
+                      </Text>
+                    </Space>
+                    <Button
+                      type="text"
+                      danger
+                      size="small"
+                      icon={<CloseOutlined />}
+                      style={{
+                        position: "absolute",
+                        top: "4px",
+                        right: "4px",
+                        minWidth: "16px",
+                        height: "16px",
+                        borderRadius: "50%",
+                        backgroundColor: "#ff4d4f",
+                        color: "#fff",
+                      }}
+                      onClick={() => removeImage(image.id)}
+                    />
+                  </div>
+                  <TextArea
+                    placeholder="Caption..."
+                    value={image.caption}
+                    onChange={(e) => {
+                      const newImages = images.map((img) =>
+                        img.id === image.id
+                          ? { ...img, caption: e.target.value }
+                          : img
+                      );
+                      setImages(newImages);
+                    }}
+                    rows={2}
+                    style={{ marginTop: "8px", fontSize: "12px" }}
+                  />
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Middle Panel - Workspace - Scrollable */}
+      <div
+        style={{
+          marginLeft: "20%",
+          marginRight: "20%",
+          width: "60%",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: "#fff",
+            borderBottom: "1px solid #d9d9d9",
+            padding: "16px",
+            textAlign: "center",
+          }}
+        >
+          <Title level={4} style={{ margin: 0 }}>
+            Thiết kế bài đăng
+          </Title>
+          <Text type="secondary">
+            Drag components here to build your layout
+          </Text>
+        </div>
+
+        <div>
+          <h1
+            ref={titleRef}
+            spellCheck={false}
+            contentEditable
+            suppressContentEditableWarning
+            style={{ border: "1px solid #ccc", padding: "4px", margin: "16px" }}
+          >
+            {title}
+          </h1>
+          <h4
+            ref={summaryRef}
+            spellCheck={false}
+            contentEditable
+            suppressContentEditableWarning
+            style={{
+              fontStyle: "italic",
+              padding: "4px",
+              border: "1px solid #ccc",
+              margin: "16px",
+              marginTop: "0",
+            }}
+          >
+            {summary}
+          </h4>
+        </div>
+
+        <div
+          style={{
+            flex: 1,
+            padding: "16px",
+            backgroundColor: "#fafafa",
+            border: "2px dashed #d9d9d9",
+            margin: "16px",
+            borderRadius: "6px",
+            minHeight: "400px",
+          }}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+        >
+          {components.length === 0 ? (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "100%",
+                color: "#999",
+              }}
+            >
+              Drop components here
+            </div>
+          ) : (
+            <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+              {components.map((component, index) => (
+                <Card key={component.id} style={{ backgroundColor: "#fff" }}>
+                  <div style={{ display: "flex", alignItems: "flex-start" }}>
+                    <div
+                      className="drag-handle"
+                      style={{
+                        marginRight: "8px",
+                        marginTop: "4px",
                         cursor: "move",
-                        position: "relative",
+                        padding: "4px",
+                        borderRadius: "4px",
+                        minWidth: "24px",
+                        minHeight: "24px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                       draggable
-                      onDragStart={(e) =>
-                        handleDragStart(e, "image", {
-                          url: image.url,
-                          alt: image.name,
-                          caption: image.caption,
-                        })
-                      }
+                      onDragStart={(e) => handleReorderDragStart(e, index)}
                     >
-                      <img
-                        src={image.url}
-                        alt={image.name}
-                        style={{
-                          width: "100%",
-                          height: "64px",
-                          objectFit: "cover",
-                          borderRadius: "4px",
-                          marginBottom: "4px",
-                        }}
-                      />
-                      <Space>
-                        <FileImageOutlined style={{ fontSize: "12px" }} />
-                        <Text
-                          ellipsis
-                          style={{
-                            fontSize: "12px",
-                            maxWidth: "100px",
-                            flex: 1,
-                          }}
-                        >
-                          {image.name}
-                        </Text>
-                      </Space>
-                      <Button
-                        type="text"
-                        danger
-                        size="small"
-                        icon={<CloseOutlined />}
-                        style={{
-                          position: "absolute",
-                          top: "4px",
-                          right: "4px",
-                          minWidth: "16px",
-                          height: "16px",
-                          borderRadius: "50%",
-                          backgroundColor: "#ff4d4f",
-                          color: "#fff",
-                        }}
-                        onClick={() => removeImage(image.id)}
-                      />
-                    </div>
-                    <TextArea
-                      placeholder="Caption..."
-                      value={image.caption}
-                      onChange={(e) => {
-                        const newImages = images.map((img) =>
-                          img.id === image.id
-                            ? { ...img, caption: e.target.value }
-                            : img
-                        );
-                        setImages(newImages);
-                      }}
-                      rows={2}
-                      style={{ marginTop: "8px", fontSize: "12px" }}
-                    />
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Col>
-
-        {/* Middle Panel - Workspace */}
-        <Col span={14} style={{ display: "flex", flexDirection: "column" }}>
-          <div
-            style={{
-              backgroundColor: "#fff",
-              borderBottom: "1px solid #d9d9d9",
-              padding: "16px",
-              textAlign: "center",
-            }}
-          >
-            <Title level={4} style={{ margin: 0 }}>
-              Thiết kế bài đăng
-            </Title>
-            <Text type="secondary">
-              Drag components here to build your layout
-            </Text>
-          </div>
-          <div>
-            <h1
-              ref={h1Ref}
-              spellCheck={false}
-              contentEditable
-              suppressContentEditableWarning
-              style={{ border: "1px solid #ccc", padding: "4px" }}
-            >
-              {title}
-            </h1>
-          </div>
-
-          <div
-            style={{
-              flex: 1,
-              padding: "16px",
-              backgroundColor: "#fafafa",
-              border: "2px dashed #d9d9d9",
-              margin: "16px",
-              borderRadius: "6px",
-              minHeight: "400px",
-            }}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-          >
-            {components.length === 0 ? (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "100%",
-                  color: "#999",
-                }}
-              >
-                Drop components here
-              </div>
-            ) : (
-              <Space
-                direction="vertical"
-                size="middle"
-                style={{ width: "100%" }}
-              >
-                {components.map((component, index) => (
-                  <Card
-                    key={component.id}
-                    style={{ backgroundColor: "#fff" }}
-                    draggable
-                    onDragStart={(e) => handleReorderDragStart(e, index)}
-                  >
-                    <div style={{ display: "flex", alignItems: "flex-start" }}>
                       <HolderOutlined
                         style={{
-                          marginRight: "8px",
-                          marginTop: "4px",
                           color: "#bfbfbf",
-                          cursor: "move",
+                          fontSize: "16px",
                         }}
                       />
-                      <div style={{ flex: 1 }}>
-                        {component.type === "richtext" && (
-                          <InlineRichTextEditor
-                            initialContent={component.data.content}
-                            onSave={handleRichTextSave}
-                            componentId={component.id}
-                          />
-                        )}
-                        {component.type === "image" && (
-                          <div>
-                            <img
-                              src={component.data.url}
-                              alt={component.data.alt}
-                              style={{
-                                maxWidth: "100%",
-                                height: "auto",
-                                borderRadius: "4px",
-                              }}
-                            />
-                            <Input
-                              placeholder="Caption..."
-                              value={component.data.caption}
-                              onChange={(e) =>
-                                updateComponent(component.id, {
-                                  caption: e.target.value,
-                                })
-                              }
-                              style={{ marginTop: "8px" }}
-                            />
-                          </div>
-                        )}
-                      </div>
                     </div>
-                  </Card>
-                ))}
-              </Space>
-            )}
-          </div>
-        </Col>
+                    <div style={{ flex: 1 }}>
+                      {component.type === "richtext" && (
+                        <InlineRichTextEditor
+                          initialContent={component.data.content}
+                          onSave={handleRichTextSave}
+                          componentId={component.id}
+                        />
+                      )}
+                      {component.type === "image" && (
+                        <div>
+                          <img
+                            src={component.data.url}
+                            alt={component.data.alt}
+                            style={{
+                              maxWidth: "100%",
+                              height: "auto",
+                              borderRadius: "4px",
+                            }}
+                          />
+                          <Input
+                            placeholder="Caption..."
+                            value={component.data.caption}
+                            onChange={(e) =>
+                              updateComponent(component.id, {
+                                caption: e.target.value,
+                              })
+                            }
+                            style={{ marginTop: "8px" }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </Space>
+          )}
+        </div>
+      </div>
 
-        {/* Right Panel - Controls */}
-        <Col
-          span={5}
-          style={{
-            backgroundColor: "#fff",
-            borderLeft: "1px solid #d9d9d9",
-            textAlign: "center",
-            position: "sticky",
-            top: 0,
-            height: "100vh",
-            overflowY: "auto",
-            zIndex: 10,
-          }}
-        >
-          <div style={{ padding: "16px" }}>
-            <Title level={4}>Công cụ</Title>
+      {/* Right Panel - Controls - Fixed */}
+      <div
+        style={{
+          width: "20%", // Using fixed width instead of Col span
+          backgroundColor: "#fff",
+          borderLeft: "1px solid #d9d9d9",
+          textAlign: "center",
+          position: "fixed",
+          right: 0,
+          top: 0,
+          height: "100vh",
+          overflowY: "auto",
+          zIndex: 10,
+        }}
+      >
+        <div style={{ padding: "16px" }}>
+          <Title level={4}>Công cụ</Title>
 
-            {/* Additional File Upload */}
-            <div style={{ marginBottom: "24px" }}>
-              <Text strong style={{ display: "block", marginBottom: "8px" }}>
-                Ảnh hiển thị
-              </Text>
+          {/* Main Image Upload */}
+          <div style={{ marginBottom: "24px" }}>
+            <Text strong style={{ display: "block", marginBottom: "8px" }}>
+              Ảnh hiển thị
+            </Text>
+
+            <input
+              type="file"
+              ref={mainImageInputRef}
+              onChange={handleMainImageUpload}
+              accept="image/*"
+              style={{ display: "none" }}
+            />
+
+            {!mainImage ? (
               <Button
                 type="primary"
                 icon={<UploadOutlined />}
-                // onClick={() => fileInputRef.current?.click()}
+                onClick={() => mainImageInputRef.current?.click()}
                 block
               >
-                Upload
+                Upload ảnh chính
               </Button>
-            </div>
-
-            {/* Dropdown */}
-            <div style={{ marginBottom: "24px" }}>
-              <Text strong style={{ display: "block", marginBottom: "8px" }}>
-                Chủ đề
-              </Text>
-              <Select
-                defaultValue={categories[0]?.content}
-                style={{ width: "100%" }}
-              >
-                {categories.map((category) => (
-                  <Option value={category.id} key={category.id}>
-                    {category.content}
-                  </Option>
-                ))}
-              </Select>
-            </div>
-
-            {/* Export Button */}
-            <Button
-              type="primary"
-              icon={<EyeOutlined />}
-              onClick={handlePreview}
-              disabled={components.length === 0}
-              block
-              style={{ marginBottom: "8px" }}
-            >
-              Xem trước
-            </Button>
-
-            {/* Clear All */}
-            <Button
-              danger
-              icon={<DeleteOutlined />}
-              onClick={() => setComponents([])}
-              disabled={components.length === 0}
-              block
-              style={{ marginBottom: "8px" }}
-            >
-              Clear All
-            </Button>
-
-            <Button type="primary" disabled={components.length === 0} block>
-              {" "}
-              Đăng bài
-            </Button>
+            ) : (
+              <div style={{ position: "relative" }}>
+                <img
+                  src={mainImage.url}
+                  alt={mainImage.name}
+                  style={{
+                    width: "100%",
+                    height: "120px",
+                    objectFit: "cover",
+                    borderRadius: "6px",
+                    marginBottom: "8px",
+                  }}
+                />
+                <Button
+                  type="text"
+                  danger
+                  size="small"
+                  icon={<CloseOutlined />}
+                  style={{
+                    position: "absolute",
+                    top: "4px",
+                    right: "4px",
+                    minWidth: "20px",
+                    height: "20px",
+                    borderRadius: "50%",
+                    backgroundColor: "#ff4d4f",
+                    color: "#fff",
+                  }}
+                  onClick={removeMainImage}
+                />
+                <Text
+                  style={{
+                    display: "block",
+                    fontSize: "12px",
+                    color: "#666",
+                    marginBottom: "8px",
+                  }}
+                >
+                  {mainImage.name}
+                </Text>
+                <Button
+                  type="default"
+                  size="small"
+                  onClick={() => mainImageInputRef.current?.click()}
+                  block
+                >
+                  Thay đổi
+                </Button>
+              </div>
+            )}
           </div>
-        </Col>
-      </Row>
+
+          {/* Dropdown */}
+          <div style={{ marginBottom: "24px" }}>
+            <Text strong style={{ display: "block", marginBottom: "8px" }}>
+              Chủ đề
+            </Text>
+            <Select
+              defaultValue={categories[0]?.content}
+              style={{ width: "100%" }}
+            >
+              {categories.map((category) => (
+                <Option value={category.id} key={category.id}>
+                  {category.content}
+                </Option>
+              ))}
+            </Select>
+          </div>
+
+          {/* Export Button */}
+          <Button
+            type="primary"
+            icon={<EyeOutlined />}
+            onClick={handlePreview}
+            disabled={components.length === 0}
+            block
+            style={{ marginBottom: "8px" }}
+          >
+            Xem trước
+          </Button>
+
+          {/* Clear All */}
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => setComponents([])}
+            disabled={components.length === 0}
+            block
+            style={{ marginBottom: "8px" }}
+          >
+            Clear All
+          </Button>
+
+          <Button
+            type="primary"
+            disabled={components.length === 0}
+            onClick={handlePublishPost}
+            block
+          >
+            Đăng bài
+          </Button>
+        </div>
+      </div>
+
       <Modal
         title="Xem trước bài viết"
         open={isPreviewVisible}

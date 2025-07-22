@@ -73,7 +73,9 @@ export const authAPI = {
   resetPassword: (token, newPassword) => api.post('/auth/reset-password', { token, newPassword }),
 };
 
-
+export const authorAPI = {
+  createnews: (news) => api.post('/author/create', news)
+} 
 
 
 export default api; 
