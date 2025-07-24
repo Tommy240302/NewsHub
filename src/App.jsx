@@ -12,6 +12,8 @@ import Login from './features/auth/Login';
 import SignUp from './features/auth/SignUp';
 import HotNews from './features/pages/HotNews';
 import TrendNews from './features/pages/TrendNews';
+import UserProfile from './features/auth/UserProfile';
+import SaveNews from './features/pages/SaveNews';
 
 import AdminLoginPage from './features/admin/loginAdmin/AdminLoginPage';
 import DashboardAdmin from './features/admin/dashboardAdmin/DashboardAdmin';
@@ -35,6 +37,9 @@ function App() {
         <Route path="signup" element={<SignUp />} />
         <Route path="hotnews" element={<HotNews />} />
         <Route path="trendnews" element={<TrendNews />} />
+        <Route path="userprofile" element={<UserProfile/>} />
+        <Route path="savenews" element={<SaveNews/>} />
+
       </Route>
       {/* Trang không dùng layout */}
         <Route path="/createnews" element={<CreateNews />} />

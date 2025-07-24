@@ -1,11 +1,14 @@
-import { Layout, Typography, Space, Button, Input } from 'antd';
+import { Layout, Typography, Space, Button, Input, Dropdown, Menu } from 'antd';
 import {
   GlobalOutlined,
   SearchOutlined,
   UserOutlined,
-  BellOutlined
+  BellOutlined,
+  LoginOutlined,
+  UserAddOutlined
 } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import './Navbar.css';
+import { Link, useNavigate } from 'react-router-dom';
 
 const { Header } = Layout;
 const { Title } = Typography;
@@ -14,6 +17,42 @@ const { Search } = Input;
 const NAVBAR_HEIGHT = 64;
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const userMenuItems = [
+  {
+    key: 'info',
+    label: (
+      <span className="user-menu-item">
+        <UserOutlined className="user-menu-icon" />
+        Thông tin người dùng
+      </span>
+    ),
+    onClick: () => navigate('/userprofile'),
+  },
+  {
+    key: 'login',
+    label: (
+      <span className="user-menu-item">
+        <LoginOutlined className="user-menu-icon" />
+        Đăng nhập
+      </span>
+    ),
+    onClick: () => navigate('/login'),
+  },
+  {
+    key: 'register',
+    label: (
+      <span className="user-menu-item">
+        <UserAddOutlined className="user-menu-icon" />
+        Đăng ký
+      </span>
+    ),
+    onClick: () => navigate('/signup'),
+  },
+];
+
+
+
   return (
     <Header style={{
       background: '#fff',
@@ -45,10 +84,28 @@ const Navbar = () => {
 
         <Space>
           <Button type="text" icon={<BellOutlined />} />
-          <Link to={"/login"}>
-            <Button type="text" icon={<UserOutlined />} />
-          </Link>
+          <Dropdown
+            menu={{ items: userMenuItems }}
+            placement="bottomRight"
+            trigger={['click']}
+            overlayStyle={{
+              borderRadius: 8,
+            
+              padding: 8,
+            }}
+          >
+            <Button
+              type="text"
+              icon={<UserOutlined />}
+              style={{
+                padding: '0 12px',
+                height: 40,
+              }}
+            />
+          </Dropdown>
+
         </Space>
+
       </div>
     </Header>
   );

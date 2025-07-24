@@ -1,0 +1,25 @@
+.user-menu-item {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  padding: 4px 8px;
+}
+
+.user-menu-icon {
+  font-size: 17px;
+  margin-right: 8px;
+  color: #555;
+}
+
+/* Optional: Hover style for menu items */
+.ant-dropdown-menu-item:hover {
+  background-color: #f0f0f0 !important;
+  border-radius: 6px;
+}
+
+/* Rounded dropdown container */
+.ant-dropdown-menu {
+  border-radius: 10px !important;
+  padding: 8px 0 !important;
+  width: 310px;
+}
