@@ -21,7 +21,8 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import InlineRichTextEditor from "../../components/ui/RichText";
-import uploadImage from "../../services/imageKitUpload";
+import { uploadFile } from "../../services/imageKit";
+import NotificationModalFactory from "../../components/NotificationModal/NotificationModalFactory";
 
 const { TextArea } = Input;
 const { Title, Text } = Typography;
@@ -41,6 +42,14 @@ const CreateNews = () => {
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [previewHTML, setPreviewHTML] = useState("");
   const [summary, setSummary] = useState("Tóm tắt");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [visible, setVisible] = useState(false);
+  const [typeNotify, setTypeNotify] = useState("info");
+  const [notifyData, setNotifyData] = useState({
+    message: "",
+    description: "",
+  });
 
   const categories = [
     {
@@ -202,13 +211,36 @@ const CreateNews = () => {
     return `<!DOCTYPE html>
 <html>
 <head>
-  <title>Preview</title>
+  <title>${title}</title>
   <style>
     body { font-family: sans-serif; padding: 16px; }
     .main-image-container { margin: 20px 0; text-align: center; }
-    .main-image { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .image-container { margin: 10px 0; }
-    .caption { font-style: italic; margin-top: 5px; color: #888; }
+    .main-image { width: 600px; height: 400px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .image-container { 
+      margin: 20px 0; 
+      text-align: center; 
+      display: block;
+    }
+    .image-container img { 
+      width: 500px; 
+      height: 700px; 
+      object-fit: cover; 
+      border-radius: 8px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: block;
+      margin: 0 auto;
+    }
+    .caption { 
+      font-style: italic; 
+      margin-top: 10px; 
+      color: #888; 
+      font-size: 14px;
+      text-align: center;
+      display: block;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
     .rich-text-content { margin: 10px 0; line-height: 1.5; }
     .summary {padding-left: 5px}
   </style>
@@ -223,26 +255,26 @@ ${htmlContent}
 
   const handlePublishPost = async () => {
     try {
+      setIsSubmitting(true);
       const uploadPromises = [];
       const uploadedImages = [];
       let updatedMainImage = {};
 
       // Upload main image if exists
       if (mainImage) {
-        const mainImagePromise = uploadImage(
-          mainImage.url,
-          mainImage.name
-        ).then((response) => {
-          updatedMainImage = { uploadedUrl: response.url };
-          return response;
-        });
+        const mainImagePromise = uploadFile(mainImage.url, mainImage.name).then(
+          (response) => {
+            updatedMainImage = { uploadedUrl: response.url };
+            return response;
+          }
+        );
         uploadPromises.push(mainImagePromise);
       }
 
       // Upload component images
       const componentImagePromises = components.map(async (component) => {
         if (component.type === "image") {
-          const response = await uploadImage(
+          const response = await uploadFile(
             component.data.url,
             component.data.alt || ""
           );
@@ -285,7 +317,7 @@ ${htmlContent}
               const caption = comp.data.caption || "";
               const html = `<div class="image-container">
       <img src="${url}" alt="${alt}" />
-      <p class="caption">${caption}</p>
+      ${caption ? `<p class="caption">${caption}</p>` : ""}
     </div>`;
               imgIndex++;
               return html;
@@ -309,11 +341,18 @@ ${htmlContent}
           };
           const response = await authorAPI.createnews(news);
           // console.log("Tạo bài viết thành công:", response.data);
-          alert("tạo bài viết thành công");
-          // navigate("/successpublish");
+          setNotifyData({
+            message: "Thành công",
+            description: "Bài báo của bạn sẽ được đăng khi được phê duyệt",
+          });
+          setVisible(true);
+          setTypeNotify("success");
+          setComponents([]);
         } catch (error) {
           console.error("Tạo bài viết thất bại:", error);
           alert("Đăng bài thất bại!");
+        } finally {
+          setIsSubmitting(false);
         }
       };
       handleCreate();
@@ -335,7 +374,11 @@ ${htmlContent}
           case "image":
             return `<div class="image-container">
             <img src="${comp.data.url}" alt="${comp.data.alt || ""}" />
-            <p class="caption">${comp.data.caption || ""}</p>
+            ${
+              comp.data.caption
+                ? `<p class="caption">${comp.data.caption}</p>`
+                : ""
+            }
           </div>`;
           default:
             return "";
@@ -389,7 +432,7 @@ ${htmlContent}
             </Space>
           </Card>
 
-          {/* Image Upload Area */}
+          {/* Image Upload Area - Resized */}
           <div style={{ marginBottom: "16px" }}>
             <Text strong style={{ fontSize: "12px", color: "#666" }}>
               Image Panel
@@ -398,11 +441,12 @@ ${htmlContent}
               style={{
                 border: "2px dashed #d9d9d9",
                 borderRadius: "6px",
-                padding: "16px",
+                padding: "24px",
                 textAlign: "center",
                 backgroundColor: "#fafafa",
                 marginTop: "8px",
                 cursor: "pointer",
+                minHeight: "120px", // Increased height
               }}
               onDrop={handleImageDrop}
               onDragOver={handleImageDragOver}
@@ -419,13 +463,20 @@ ${htmlContent}
               />
               <UploadOutlined
                 style={{
-                  fontSize: "24px",
+                  fontSize: "32px", // Increased icon size
                   color: "#bfbfbf",
-                  marginBottom: "8px",
+                  marginBottom: "12px",
                 }}
               />
-              <div style={{ fontSize: "12px", color: "#666" }}>
+              <div
+                style={{ fontSize: "14px", color: "#666", fontWeight: "500" }}
+              >
                 Drop images here or click to upload
+              </div>
+              <div
+                style={{ fontSize: "12px", color: "#999", marginTop: "4px" }}
+              >
+                Images will be displayed as 600px x 400px
               </div>
             </div>
           </div>
@@ -471,7 +522,7 @@ ${htmlContent}
                       alt={image.name}
                       style={{
                         width: "100%",
-                        height: "64px",
+                        height: "80px", // Increased preview height
                         objectFit: "cover",
                         borderRadius: "4px",
                         marginBottom: "4px",
@@ -646,26 +697,48 @@ ${htmlContent}
                         />
                       )}
                       {component.type === "image" && (
-                        <div>
+                        <div
+                          style={{
+                            textAlign: "center",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            width: "100%",
+                          }}
+                        >
                           <img
                             src={component.data.url}
                             alt={component.data.alt}
                             style={{
-                              maxWidth: "100%",
-                              height: "auto",
+                              width: "600px", // Preview size in editor
+                              height: "400px", // Maintaining 500:700 ratio
+                              objectFit: "cover",
                               borderRadius: "4px",
+                              border: "1px solid #d9d9d9",
+                              display: "block",
+                              marginBottom: "8px",
                             }}
                           />
                           <Input
                             placeholder="Caption..."
-                            value={component.data.caption}
+                            value={component.data.caption || ""}
                             onChange={(e) =>
                               updateComponent(component.id, {
                                 caption: e.target.value,
                               })
                             }
-                            style={{ marginTop: "8px" }}
+                            style={{
+                              width: "600px",
+                              marginBottom: "4px",
+                            }}
                           />
+                          <div
+                            style={{
+                              fontSize: "12px",
+                              color: "#999",
+                              textAlign: "center",
+                            }}
+                          ></div>
                         </div>
                       )}
                     </div>
@@ -815,9 +888,10 @@ ${htmlContent}
             type="primary"
             disabled={components.length === 0}
             onClick={handlePublishPost}
+            loading={isSubmitting}
             block
           >
-            Đăng bài
+            {isSubmitting ? "Đang xử lý..." : "Đăng bài"}
           </Button>
         </div>
       </div>
@@ -827,6 +901,7 @@ ${htmlContent}
         open={isPreviewVisible}
         onCancel={() => setIsPreviewVisible(false)}
         footer={null}
+        centered
         width={1200}
         bodyStyle={{ padding: 0 }}
       >
@@ -836,6 +911,14 @@ ${htmlContent}
           style={{ width: "100%", height: "80vh", border: "none" }}
         />
       </Modal>
+
+      <NotificationModalFactory
+        type={typeNotify}
+        visible={visible}
+        onClose={() => setVisible(false)}
+        message={notifyData.message}
+        description={notifyData.description}
+      />
     </div>
   );
 };

@@ -77,5 +77,8 @@ export const authorAPI = {
   createnews: (news) => api.post('/author/create', news)
 } 
 
+export const userAPI = {
+  requestAuthor: (requestAuthor) => api.post('/users/request-author', requestAuthor)
+}
 
 export default api; 

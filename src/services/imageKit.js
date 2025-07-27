@@ -22,16 +22,16 @@ const base64ToFile = (base64String, fileName) => {
 };
 
 // Upload single image to ImageKit
-const uploadImage = async (imageData, fileName) => {
+export const uploadFile = async (filedata, fileName) => {
   try {
     const form = new FormData();
 
     // Convert base64 to file if needed
     let fileToUpload;
-    if (typeof imageData === "string" && imageData.startsWith("data:")) {
-      fileToUpload = base64ToFile(imageData, fileName);
+    if (typeof filedata === "string" && filedata.startsWith("data:")) {
+      fileToUpload = base64ToFile(filedata, fileName);
     } else {
-      fileToUpload = imageData;
+      fileToUpload = filedata;
     }
 
     const uniqueFileName = generateUniqueFileName(fileName);
@@ -50,15 +50,31 @@ const uploadImage = async (imageData, fileName) => {
       },
       data: form,
     };
-    console.log(options.headers)
 
     const { data } = await axios.request(options);
-    console.log("Image uploaded successfully:", data);
+    // console.log("Image uploaded successfully:", data);
     return data;
   } catch (error) {
-    console.error("Error uploading image:", error.respo);
+    console.error("Error uploading image:", error);
     throw error;
   }
 };
 
-export default uploadImage;
+// Upload single image to ImageKit
+export const deleteFile = async (fileId) => {
+  try {
+    const options = {
+      method: "DELETE",
+      url: "https://api.imagekit.io/v1/files/"  +fileId,
+      headers: {
+        Accept: "application/json",
+        Authorization: "Basic " + imagekit_key,
+      },
+    };
+
+    const { data } = await axios.request(options);
+    return data;
+  } catch (error) {
+    console.error("Error delete image:", error);
+  }
+};
