@@ -69,16 +69,6 @@ function App() {
           </div>
         }
       />
-      <Route
-        path="/forbidden"
-        element={
-          <div style={{ textAlign: "center", marginTop: "50px" }}>
-            <h1>404 - Không tìm thấy trang</h1>
-            <p>Trang bạn đang tìm kiếm không tồn tại.</p>
-            <a href="/">Về trang chủ</a>
-          </div>
-        }
-      />
     </Routes>
   );
 }
