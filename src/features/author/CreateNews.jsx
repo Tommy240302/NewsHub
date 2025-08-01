@@ -1,4 +1,4 @@
-import React, { useState, useRef, use } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { authorAPI } from "../../common/api";
 import {
   Button,
@@ -22,6 +22,8 @@ import {
 } from "@ant-design/icons";
 import InlineRichTextEditor from "../../components/ui/RichText";
 import uploadImage from "../../services/imageKitUpload";
+import { categoryAPI } from '../../common/api';
+import { SUCCESS_STATUS, FAIL_STATUS } from '../../common/variable-const';
 
 const { TextArea } = Input;
 const { Title, Text } = Typography;
@@ -42,20 +44,30 @@ const CreateNews = () => {
   const [previewHTML, setPreviewHTML] = useState("");
   const [summary, setSummary] = useState("Tóm tắt");
 
-  const categories = [
-    {
-      id: 1,
-      content: "Công nghệ",
-    },
-    {
-      id: 2,
-      content: "Chính trị",
-    },
-    {
-      id: 3,
-      content: "Văn hóa",
-    },
-  ];
+
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await categoryAPI.getAllCategories();
+        const { status, data, errorMessage } = response;
+        if (status === SUCCESS_STATUS) {
+          setCategories(data);
+          if (data && data.length > 0) setSelectedCategory(data[0].id);
+        } else if (status === FAIL_STATUS) {
+          console.error('Lỗi từ API:', errorMessage || 'Không thể lấy dữ liệu');
+        }
+      } catch (error) {
+        console.error('Lỗi khi gọi API danh mục:', error);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   // Handle drag start from component panels
   const handleDragStart = (e, type, data = {}) => {
@@ -305,7 +317,7 @@ ${htmlContent}
             summary: summary,
             content: content,
             image: mainImageUrl,
-            categoryId: 1,
+            categoryId: selectedCategory,
           };
           const response = await authorAPI.createnews(news);
           // console.log("Tạo bài viết thành công:", response.data);
@@ -776,8 +788,12 @@ ${htmlContent}
               Chủ đề
             </Text>
             <Select
-              defaultValue={categories[0]?.content}
+              value={selectedCategory}
               style={{ width: "100%" }}
+              onChange={setSelectedCategory}
+              loading={loadingCategories}
+              placeholder={loadingCategories ? "Đang tải..." : "Chọn chủ đề"}
+              disabled={loadingCategories || categories.length === 0}
             >
               {categories.map((category) => (
                 <Option value={category.id} key={category.id}>
@@ -819,6 +835,7 @@ ${htmlContent}
           >
             Đăng bài
           </Button>
+          
         </div>
       </div>
 
