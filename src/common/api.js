@@ -76,6 +76,8 @@ export const authAPI = {
 
 export const userAPI = {
   getDetailUser: (id) => api.get('/users/' + id),
+  // Lấy user profile của user đang đăng nhập qua endpoint /users/me
+  getMe: () => api.get('/users/me'),
 };
 
 export const authorAPI = {

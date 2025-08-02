@@ -21,9 +21,8 @@ const UserProfile = () => {
 
     useEffect(() => {
         const fetchUser = async () => {
-            const userId = localStorage.getItem('id');
             try {
-                const response = await userAPI.getDetailUser(userId);
+                const response = await userAPI.getMe();
                 if (response.status === SUCCESS_STATUS) {
                     setUserData(response.data);
                 }
