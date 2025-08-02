@@ -13,7 +13,10 @@ import SignUp from './features/auth/SignUp';
 import HotNews from './features/pages/HotNews';
 import TrendNews from './features/pages/TrendNews';
 import UserProfile from './features/auth/UserProfile';
+import UserProfile2 from './features/auth/UserProfile2';
 import SaveNews from './features/pages/SaveNews';
+import CategoryList from './features/author/CategoryList';
+import ListNews from './components/ui/ListNews';
 
 import AdminLoginPage from './features/admin/loginAdmin/AdminLoginPage';
 import DashboardAdmin from './features/admin/dashboardAdmin/DashboardAdmin';
@@ -38,8 +41,10 @@ function App() {
         <Route path="hotnews" element={<HotNews />} />
         <Route path="trendnews" element={<TrendNews />} />
         <Route path="userprofile" element={<UserProfile/>} />
+        <Route path="userprofile2" element={<UserProfile2/>} />
         <Route path="savenews" element={<SaveNews/>} />
-
+        <Route path="category" element={<CategoryList/>} />
+        <Route path="listnews" element={<ListNews />} />
       </Route>
       {/* Trang không dùng layout */}
         <Route path="/createnews" element={<CreateNews />} />

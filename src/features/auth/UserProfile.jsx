@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './UserProfile.css';
 import { useNavigate } from 'react-router-dom';
-
 import {
     UserOutlined,
     LockOutlined,
@@ -9,22 +8,63 @@ import {
     EyeOutlined,
     LogoutOutlined,
     FacebookFilled,
-    GoogleOutlined
+    GoogleOutlined,
 } from '@ant-design/icons';
-import { Avatar, Input, Button, Select, Radio, Switch } from 'antd';
-
-const { Option } = Select;
+import { Avatar, Input, Button, Switch } from 'antd';
+import { userAPI } from '../../common/api';
+import { SUCCESS_STATUS } from '../../common/variable-const';
 
 const UserProfile = () => {
     const navigate = useNavigate();
+    const [userData, setUserData] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const userId = localStorage.getItem('id');
+            try {
+                const response = await userAPI.getDetailUser(userId);
+                if (response.status === SUCCESS_STATUS) {
+                    setUserData(response.data);
+                }
+            } catch (error) {
+                console.error('Lỗi khi lấy dữ liệu user:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchUser();
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate('/login');
+    };
+
+    const displayValue = (value) => {
+        return value ?? 'Chưa cập nhật';
+    };
+
+    const formatDate = (dateString) => {
+        if (!dateString) return 'Chưa cập nhật';
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return 'Chưa cập nhật';
+        return date.toLocaleDateString('vi-VN');
+    };
+
+    if (loading) return <div className="profile-loading">Đang tải...</div>;
+    if (!userData) return <div className="profile-error">Không có dữ liệu người dùng.</div>;
 
     return (
         <div className="profile-container">
             <div className="profile-sidebar">
                 <div className="profile-avatar">
-                    <Avatar size={96} src="/avatar.jpg" icon={<UserOutlined />} />
-
-                    <div className="profile-name">Quang Minh</div>
+                    <Avatar
+                        size={96}
+                        src={userData.avatar || '/default-avatar.jpg'}
+                        icon={<UserOutlined />}
+                    />
+                    <div className="profile-name">{displayValue(userData.firstName)} {displayValue(userData.lastName)}</div>
                 </div>
                 <ul className="profile-menu">
                     <li className="active" onClick={() => navigate('/userprofile')}>
@@ -42,60 +82,59 @@ const UserProfile = () => {
                     <li onClick={() => navigate('')}>
                         <EyeOutlined /> Tin đã xem
                     </li>
-                    <li onClick={() => navigate('')}>
+                    <li onClick={handleLogout}>
                         <LogoutOutlined /> Đăng xuất
                     </li>
                 </ul>
-
             </div>
 
             <div className="profile-content">
                 <h3>Thông tin tài khoản</h3>
                 <div className="form-row">
-                    <label>Tên hiển thị</label>
-                    <Input placeholder="Quang Minh" />
+                    <label>Họ</label>
+                    <Input value={displayValue(userData.firstName)} readOnly />
                 </div>
                 <div className="form-row">
-                    <label>Giới tính</label>
-                    <Radio.Group defaultValue="other">
-                        <Radio value="male">Nam</Radio>
-                        <Radio value="female">Nữ</Radio>
-                        <Radio value="other">Khác</Radio>
-                    </Radio.Group>
-                </div>
-                <div className="form-row">
-                    <label>Ngày sinh</label>
-                    <div className="form-date-selects">
-                        <Select defaultValue="1"><Option value="1">1</Option></Select>
-                        <Select defaultValue="1"><Option value="1">1</Option></Select>
-                        <Select defaultValue="2002"><Option value="2002">2002</Option></Select>
-                    </div>
+                    <label>Tên</label>
+                    <Input value={displayValue(userData.lastName)} readOnly />
                 </div>
                 <div className="form-row">
                     <label>Email</label>
-                    <Input defaultValue="laikhacminhquang24032002@gmail.com" />
+                    <Input value={displayValue(userData.email)} readOnly />
+                </div>
+                <div className="form-row">
+                    <label>Ngày sinh</label>
+                    <Input value={formatDate(userData.dateOfBirth)} readOnly />
                 </div>
                 <div className="form-row">
                     <label>Điện thoại</label>
-                    <Input />
+                    <Input value={displayValue(userData.phone)} readOnly />
                 </div>
                 <div className="form-row">
-                    <label>Địa chỉ</label>
-                    <Input />
+                    <label>Ngày tạo tài khoản</label>
+                    <Input value={userData.createDay || 'Chưa cập nhật'} readOnly />
                 </div>
 
-                <Button type="primary" className="save-btn">Lưu thay đổi</Button>
+
+                <Button type="primary" className="save-btn" onClick={() => navigate('')}>
+                    Chỉnh sửa thông tin
+                </Button>
 
                 <h3 style={{ marginTop: '32px' }}>Liên kết tài khoản xã hội</h3>
                 <div className="social-link-row">
-                    <FacebookFilled style={{ color: '#1877f2' }} /> Tài khoản Facebook <Switch />
+                    <FacebookFilled style={{ color: '#1877f2' }} /> Facebook <Switch defaultChecked />
                 </div>
                 <div className="social-link-row">
-                    <GoogleOutlined style={{ color: '#DB4437' }} /> Tài khoản Google <Switch />
+                    <GoogleOutlined style={{ color: '#DB4437' }} /> Google <Switch />
                 </div>
                 <div className="social-link-row">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" alt="Zalo" width={16} style={{ marginRight: 8 }} />
-                    Tài khoản Zalo <Switch />
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg"
+                        alt="Zalo"
+                        width={16}
+                        style={{ marginRight: 8 }}
+                    />
+                    Zalo <Switch />
                 </div>
             </div>
         </div>

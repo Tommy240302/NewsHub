@@ -4,39 +4,52 @@ import NewsCard from '../../components/ui/NewsCard';
 import TrendingNews from '../../components/ui/TrendingNews';
 import WeatherWidget from '../../components/ui/WeatherWidget';
 import { NAVBAR_HEIGHT_PX } from '../../components/layout/Navbar';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const { Title, Text, Paragraph } = Typography;
 
 const HomePage = () => {
-  const featuredNews = [
-    {
-      id: 1,
-      title: "Công nghệ AI đột phá: ChatGPT-5 ra mắt với khả năng đa phương tiện",
-      summary: "OpenAI vừa công bố phiên bản ChatGPT-5 với những cải tiến đáng kể về khả năng xử lý hình ảnh và video...",
-      category: "Công nghệ",
-      time: "2 giờ trước",
-      image: "https://via.placeholder.com/400x250/1890ff/ffffff?text=AI+News",
-      hot: true
-    },
-    {
-      id: 2,
-      title: "Việt Nam đăng cai SEA Games 2025: Chuẩn bị hoàn tất",
-      summary: "Với thời gian còn lại chưa đầy 1 năm, Việt Nam đang gấp rút hoàn thiện các công trình phục vụ SEA Games...",
-      category: "Thể thao",
-      time: "4 giờ trước",
-      image: "https://via.placeholder.com/400x250/52c41a/ffffff?text=Sports",
-      hot: false
-    },
-    {
-      id: 3,
-      title: "Thị trường chứng khoán: VN-Index tăng mạnh phiên cuối tuần",
-      summary: "Chỉ số VN-Index đã tăng 2.5% trong phiên giao dịch cuối tuần, đánh dấu tuần tăng trưởng tích cực...",
-      category: "Kinh tế",
-      time: "6 giờ trước",
-      image: "https://via.placeholder.com/400x250/faad14/ffffff?text=Finance",
-      hot: true
-    }
-  ];
+  const [featuredNews, setFeaturedNews] = useState([]);
+
+  // Bạn có thể fetch từ API thật ở đây nếu muốn
+  useEffect(() => {
+    // Ví dụ gọi API:
+    // axios.get('http://localhost:6969/api/news/all-news')
+    //   .then(res => setFeaturedNews(res.data))
+    //   .catch(err => console.error(err));
+
+    // Dữ liệu giả định
+    setFeaturedNews([
+      {
+        id: 1,
+        title: "Công nghệ AI đột phá: ChatGPT-5 ra mắt với khả năng đa phương tiện",
+        summary: "OpenAI vừa công bố phiên bản ChatGPT-5 với những cải tiến đáng kể về khả năng xử lý hình ảnh và video...",
+        category: "Công nghệ",
+        time: "2 giờ trước",
+        image: "https://via.placeholder.com/400x250/1890ff/ffffff?text=AI+News",
+        hot: true
+      },
+      {
+        id: 2,
+        title: "Việt Nam đăng cai SEA Games 2025: Chuẩn bị hoàn tất",
+        summary: "Với thời gian còn lại chưa đầy 1 năm, Việt Nam đang gấp rút hoàn thiện các công trình phục vụ SEA Games...",
+        category: "Thể thao",
+        time: "4 giờ trước",
+        image: "https://via.placeholder.com/400x250/52c41a/ffffff?text=Sports",
+        hot: false
+      },
+      {
+        id: 3,
+        title: "Thị trường chứng khoán: VN-Index tăng mạnh phiên cuối tuần",
+        summary: "Chỉ số VN-Index đã tăng 2.5% trong phiên giao dịch cuối tuần, đánh dấu tuần tăng trưởng tích cực...",
+        category: "Kinh tế",
+        time: "6 giờ trước",
+        image: "https://via.placeholder.com/400x250/faad14/ffffff?text=Finance",
+        hot: true
+      }
+    ]);
+  }, []);
 
   const trendingNews = [
     {
@@ -66,21 +79,20 @@ const HomePage = () => {
   ];
 
   return (
-    <div style={{paddingTop: NAVBAR_HEIGHT_PX}}>
-      {/* Carousel tin nổi bật */}
+    <div style={{ paddingTop: NAVBAR_HEIGHT_PX }}>
       <Carousel autoplay dotPosition='bottom' effect='fade' style={{ marginBottom: 24 }}>
         {featuredNews.map(news => (
           <div key={news.id}>
-            <div style={{ 
-              position: 'relative', 
-              height: 400, 
-              background: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${news.image})`, 
-              backgroundSize: 'cover', 
-              backgroundPosition: 'center', 
-              borderRadius: 8, 
-              display: 'flex', 
-              alignItems: 'flex-end', 
-              padding: 24 
+            <div style={{
+              position: 'relative',
+              height: 400,
+              background: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${news.image})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              borderRadius: 8,
+              display: 'flex',
+              alignItems: 'flex-end',
+              padding: 24
             }}>
               <div style={{ color: 'white' }}>
                 <Tag color={news.hot ? 'red' : 'blue'} style={{ marginBottom: 8 }}>
@@ -102,12 +114,10 @@ const HomePage = () => {
       </Carousel>
 
       <Row gutter={24}>
-        {/* Tin tức chính */}
         <Col xs={24} lg={16}>
           <Title level={3} style={{ marginBottom: 16 }}>
             <FireOutlined style={{ color: '#ff4d4f' }} /> Tin tức mới nhất
           </Title>
-          
           <Row gutter={[16, 16]}>
             {featuredNews.map(news => (
               <Col xs={24} md={12} key={news.id}>
@@ -117,7 +127,6 @@ const HomePage = () => {
           </Row>
         </Col>
 
-        {/* Sidebar */}
         <Col xs={24} lg={8}>
           <div style={{ position: 'sticky', top: 100 }}>
             <TrendingNews trendingNews={trendingNews} />
@@ -129,4 +138,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage; 
+export default HomePage;

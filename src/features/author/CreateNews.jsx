@@ -39,10 +39,10 @@ const CreateNews = () => {
   const mainImageInputRef = useRef(null);
   const titleRef = useRef(null);
   const summaryRef = useRef(null);
-  const [title, setTitle] = useState("Tiêu đề");
+  const [title, setTitle] = useState("");
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [previewHTML, setPreviewHTML] = useState("");
-  const [summary, setSummary] = useState("Tóm tắt");
+  const [summary, setSummary] = useState("");
 
 
   const [categories, setCategories] = useState([]);
@@ -316,7 +316,7 @@ ${htmlContent}
             title: title,
             summary: summary,
             content: content,
-            image: mainImageUrl,
+            image: mainImageUrl, // mainImageUrl is set from the main image upload (ảnh hiển thị)
             categoryId: selectedCategory,
           };
           const response = await authorAPI.createnews(news);
@@ -567,31 +567,19 @@ ${htmlContent}
           </Text>
         </div>
 
-        <div>
-          <h1
-            ref={titleRef}
-            spellCheck={false}
-            contentEditable
-            suppressContentEditableWarning
-            style={{ border: "1px solid #ccc", padding: "4px", margin: "16px" }}
-          >
-            {title}
-          </h1>
-          <h4
-            ref={summaryRef}
-            spellCheck={false}
-            contentEditable
-            suppressContentEditableWarning
-            style={{
-              fontStyle: "italic",
-              padding: "4px",
-              border: "1px solid #ccc",
-              margin: "16px",
-              marginTop: "0",
-            }}
-          >
-            {summary}
-          </h4>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, margin: 16 }}>
+          <Input
+            placeholder="Nhập tiêu đề bài viết"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            style={{ fontWeight: 600, fontSize: 20, marginBottom: 8 }}
+          />
+          <Input
+            placeholder="Nhập tóm tắt bài viết"
+            value={summary}
+            onChange={e => setSummary(e.target.value)}
+            style={{ fontStyle: 'italic', fontSize: 16 }}
+          />
         </div>
 
         <div

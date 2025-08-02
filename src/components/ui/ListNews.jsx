@@ -1,12 +1,10 @@
-
 import React, { useEffect, useState } from 'react';
 import { newsAPI } from '../../common/api';
 import { Card, List, Typography, Badge, Spin } from 'antd';
-import './HotNews.css';
 
 const { Text } = Typography;
 
-const HotNews = () => {
+const ListNews = () => {
   const [newsList, setNewsList] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,29 +41,29 @@ const HotNews = () => {
           dataSource={newsList}
           locale={{ emptyText: 'Không có bài viết nào.' }}
           renderItem={item => (
-            <List.Item className="hotnews-list-item">
-              <div className="hotnews-card">
-                <img
-                  src={item.image}
-                  alt="news"
-                  className="hotnews-img"
-                />
-                <div className="hotnews-content">
-                  <div className="hotnews-title-row">
-                    <span className="hotnews-title">{item.title}</span>
-                    <Badge count={item.view} className="hotnews-badge" />
+            <List.Item>
+              <List.Item.Meta
+                title={
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text strong style={{ fontSize: 16 }}>{item.title}</Text>
+                    <Badge count={item.view} style={{ backgroundColor: '#52c41a' }} />
                   </div>
-                  <div className="hotnews-date">
-                    {item.publishedAt ? new Date(item.publishedAt).toLocaleString() : ''}
-                  </div>
-                  <div>
-                    <div className="hotnews-summary">{item.summary}</div>
-                  </div>
-                  <div>
-                    <span className="hotnews-label">{item.authorName}</span>
-                  </div>
-                </div>
-              </div>
+                }
+                description={
+                  <>
+                    <Text type="secondary" style={{ fontSize: 13 }}>
+                      {item.publishedAt ? new Date(item.publishedAt).toLocaleString() : ''}
+                    </Text>
+                    <div style={{ marginTop: 4 }}>
+                      <Text type="secondary">Tóm tắt: {item.summary}</Text>
+                    </div>
+                    <div style={{ marginTop: 2 }}>
+                      <Text type="secondary">Tác giả: {item.authorName}</Text>
+                    </div>
+                  </>
+                }
+                avatar={<img src={item.image} alt="news" style={{ width: 64, height: 40, objectFit: 'cover', borderRadius: 4 }} />}
+              />
             </List.Item>
           )}
         />
@@ -74,4 +72,4 @@ const HotNews = () => {
   );
 };
 
-export default HotNews;
+export default ListNews;

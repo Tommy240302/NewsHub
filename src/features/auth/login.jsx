@@ -50,8 +50,13 @@ const Login = () => {
 
     if (status === SUCCESS_STATUS) {
       const token = data?.token;// lay ra dk token 
+      const id = data?.user.id;
       if (token) {
         localStorage.setItem("token", token); //Lưu token vào localStorage
+
+      }
+      if (id) {
+        localStorage.setItem("id", id);
       }
 
       alert("Đăng nhập thành công");
