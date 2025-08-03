@@ -78,7 +78,8 @@ export const userAPI = {
   getDetailUser: (id) => api.get('/users/' + id),
   // Lấy user profile của user đang đăng nhập qua endpoint /users/me
   getMe: () => api.get('/users/me'),
-  requestAuthor: (requestAuthor) => api.post('/users/request-author', requestAuthor)
+  requestAuthor: (requestAuthor) => api.post('/users/request-author', requestAuthor),
+  addComment: (requestComment) => api.post('/users/addComment', requestComment)
 };
 
 export const authorAPI = {
@@ -88,6 +89,8 @@ export const authorAPI = {
 
 export const newsAPI = {
   getAllNews: () => api.get('/news'),
+  getNewsById: (id)=> api.get('/news/'+id),
+  getCommentByNewsId: (id)=> api.get('/news/comment/'+id)
 };
 
 export const categoryAPI = {

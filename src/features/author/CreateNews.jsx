@@ -256,11 +256,23 @@ const CreateNews = () => {
       margin-right: auto;
     }
     .rich-text-content { margin: 10px 0; line-height: 1.5; }
-    .summary {padding-left: 5px}
+    .summary {
+     font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+    }
+    #title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #1a237e;
+    line-height: 1.3;
+}
   </style>
 </head>
 <body>
-<h1>${title}</h1>
+<h1 id="title">${title}</h1>
 <h4 class="summary">${summary}</h4>
 ${htmlContent}
 </body>
@@ -344,12 +356,12 @@ ${htmlContent}
 
       const handleCreate = async () => {
         try {
-          const content = fullHTMLGenerate(htmlContent);
+          // const content = fullHTMLGenerate(htmlContent);
           const mainImageUrl = updatedMainImage?.uploadedUrl || null;
           const news = {
             title: title,
             summary: summary,
-            content: content,
+            content: htmlContent,
             image: mainImageUrl, // mainImageUrl is set from the main image upload (ảnh hiển thị)
             categoryId: selectedCategory,
           };

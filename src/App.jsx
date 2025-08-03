@@ -9,6 +9,7 @@ import AboutPage from "./features/about/AboutPage";
 import ContactPage from "./features/contact/ContactPage";
 import HomePage2 from "./features/home/HomePage2";
 import RequestAuthor from "./features/user/RequestAuthor";
+import NewsDetailPage from "./features/news/NewsDetail";
 
 import Login from "./features/auth/Login";
 import SignUp from "./features/auth/SignUp";
@@ -44,6 +45,7 @@ function App() {
         <Route path="trendnews" element={<TrendNews />} />
 
         <Route path="request-author" element={<RequestAuthor />} />
+        <Route path="news/:id" element={<NewsDetailPage />} />
 
         <Route path="userprofile" element={<UserProfile />} />
         <Route path="userprofile2" element={<UserProfile2 />} />
