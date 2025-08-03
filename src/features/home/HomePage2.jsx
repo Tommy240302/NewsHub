@@ -10,7 +10,7 @@ import './HomePage2.css';
 
 const { Title, Text, Paragraph } = Typography;
 
-const HomePage = () => {
+const HomePage2 = () => {
   const [featuredNews, setFeaturedNews] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -97,4 +97,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default HomePage2;

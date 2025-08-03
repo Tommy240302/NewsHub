@@ -35,7 +35,13 @@ const HotNews = () => {
   }, [newsList]);
 
   return (
-    <Card title="Danh sách bài viết" style={{ margin: 24 }}>
+    <Card
+      title={
+        <span style={{ fontSize: '24px', color: '#ff4d4f', fontWeight: 'bold' }}>
+          Tin nóng
+        </span>
+      }
+      style={{ margin: 24 }}>
       {loading ? (
         <div style={{ textAlign: 'center', padding: 32 }}><Spin /></div>
       ) : (

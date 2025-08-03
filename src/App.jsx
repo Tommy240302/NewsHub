@@ -7,6 +7,7 @@ import AdminLayout from './components/layout/AdminLayout';
 import HomePage from './features/home/HomePage';
 import AboutPage from './features/about/AboutPage';
 import ContactPage from './features/contact/ContactPage';
+import HomePage2 from './features/home/HomePage2';
 
 import Login from './features/auth/Login';
 import SignUp from './features/auth/SignUp';
@@ -45,6 +46,8 @@ function App() {
         <Route path="savenews" element={<SaveNews/>} />
         <Route path="category" element={<CategoryList/>} />
         <Route path="listnews" element={<ListNews />} />
+        <Route path="home2" element={<HomePage2 />} />
+
       </Route>
       {/* Trang không dùng layout */}
         <Route path="/createnews" element={<CreateNews />} />
