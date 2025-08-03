@@ -60,7 +60,6 @@ const Signup = () => {
     avatar: formData.avatar || "",
     
   };
-  axios.post("http://localhost:6969/api/auth/register", payload)
 
     try { 
     const response = await authAPI.register(payload);

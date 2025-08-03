@@ -7,6 +7,7 @@ const TrendingNews = ({ trendingNews }) => {
     <Card title="Tin trending" style={{ marginBottom: 16 }}>
       <List
         dataSource={trendingNews}
+        locale={{ emptyText: 'Không có bài viết nào.' }}
         renderItem={item => (
           <List.Item>
             <List.Item.Meta
@@ -15,12 +16,12 @@ const TrendingNews = ({ trendingNews }) => {
                   <Text strong style={{ fontSize: 14 }}>
                     {item.title}
                   </Text>
-                  <Badge count={item.views} style={{ backgroundColor: '#52c41a' }} />
+                  <Badge count={item.view} style={{ backgroundColor: '#52c41a' }} />
                 </div>
               }
               description={
                 <Text type="secondary" style={{ fontSize: 12 }}>
-                  {item.time}
+                  {item.publishedAt ? new Date(item.publishedAt).toLocaleString() : ''}
                 </Text>
               }
             />

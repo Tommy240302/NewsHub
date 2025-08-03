@@ -1,0 +1,38 @@
+.category-container {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.category-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.category-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid #eee;
+  font-size: 16px;
+  color: #333;
+  transition: background 0.2s;
+}
+
+.category-item:last-child {
+  border-bottom: none;
+}
+
+.category-item:hover {
+  background: #f5f5f5;
+}
+
+.category-loading,
+.category-empty {
+  text-align: center;
+  color: #888;
+  padding: 32px 0;
+  font-size: 18px;
+}
