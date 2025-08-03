@@ -78,6 +78,7 @@ export const userAPI = {
   getDetailUser: (id) => api.get('/users/' + id),
   // Lấy user profile của user đang đăng nhập qua endpoint /users/me
   getMe: () => api.get('/users/me'),
+  requestAuthor: (requestAuthor) => api.post('/users/request-author', requestAuthor)
 };
 
 export const authorAPI = {
@@ -92,9 +93,5 @@ export const newsAPI = {
 export const categoryAPI = {
   getAllCategories: () => api.get('/categories'),
 };
-
-export const userAPI = {
-  requestAuthor: (requestAuthor) => api.post('/users/request-author', requestAuthor)
-}
 
 export default api; 
