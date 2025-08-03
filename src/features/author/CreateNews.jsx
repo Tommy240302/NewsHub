@@ -25,9 +25,8 @@ import InlineRichTextEditor from "../../components/ui/RichText";
 import { uploadFile } from "../../services/imageKit";
 import NotificationModalFactory from "../../components/NotificationModal/NotificationModalFactory";
 
-import { categoryAPI } from '../../common/api';
-import { SUCCESS_STATUS, FAIL_STATUS } from '../../common/variable-const';
-
+import { categoryAPI } from "../../common/api";
+import { SUCCESS_STATUS, FAIL_STATUS } from "../../common/variable-const";
 
 const { TextArea } = Input;
 const { Title, Text } = Typography;
@@ -57,9 +56,6 @@ const CreateNews = () => {
     description: "",
   });
 
-  const [summary, setSummary] = useState("");
-
-
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [loadingCategories, setLoadingCategories] = useState(true);
@@ -73,10 +69,10 @@ const CreateNews = () => {
           setCategories(data);
           if (data && data.length > 0) setSelectedCategory(data[0].id);
         } else if (status === FAIL_STATUS) {
-          console.error('Lỗi từ API:', errorMessage || 'Không thể lấy dữ liệu');
+          console.error("Lỗi từ API:", errorMessage || "Không thể lấy dữ liệu");
         }
       } catch (error) {
-        console.error('Lỗi khi gọi API danh mục:', error);
+        console.error("Lỗi khi gọi API danh mục:", error);
       } finally {
         setLoadingCategories(false);
       }
@@ -624,18 +620,25 @@ ${htmlContent}
           </Text>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, margin: 16 }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+            margin: 16,
+          }}
+        >
           <Input
             placeholder="Nhập tiêu đề bài viết"
             value={title}
-            onChange={e => setTitle(e.target.value)}
+            onChange={(e) => setTitle(e.target.value)}
             style={{ fontWeight: 600, fontSize: 20, marginBottom: 8 }}
           />
           <Input
             placeholder="Nhập tóm tắt bài viết"
             value={summary}
-            onChange={e => setSummary(e.target.value)}
-            style={{ fontStyle: 'italic', fontSize: 16 }}
+            onChange={(e) => setSummary(e.target.value)}
+            style={{ fontStyle: "italic", fontSize: 16 }}
           />
         </div>
 
@@ -903,7 +906,6 @@ ${htmlContent}
           >
             {isSubmitting ? "Đang xử lý..." : "Đăng bài"}
           </Button>
-          
         </div>
       </div>
 
