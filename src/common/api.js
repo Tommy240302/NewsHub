@@ -93,5 +93,8 @@ export const categoryAPI = {
   getAllCategories: () => api.get('/categories'),
 };
 
+export const userAPI = {
+  requestAuthor: (requestAuthor) => api.post('/users/request-author', requestAuthor)
+}
 
 export default api; 
