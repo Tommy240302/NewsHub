@@ -90,7 +90,8 @@ export const authorAPI = {
 export const newsAPI = {
   getAllNews: () => api.get('/news'),
   getNewsById: (id)=> api.get('/news/'+id),
-  getCommentByNewsId: (id)=> api.get('/news/comment/'+id)
+  getCommentByNewsId: (id)=> api.get('/news/comment/'+id),
+  addView: (view)=> api.patch('/news/addView', view),
 };
 
 export const categoryAPI = {

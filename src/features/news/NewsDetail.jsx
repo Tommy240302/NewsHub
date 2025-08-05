@@ -6,6 +6,7 @@ import { userAPI } from "../../common/api";
 import NotificationModalFactory from "../../components/NotificationModal/NotificationModalFactory";
 import HtmlDisplay from "./htmlDisplay";
 import { Button } from "antd";
+import ipify from "../../services/ipify";
 
 export default function NewsDetailPage() {
   const [comments, setComments] = useState([]);
@@ -21,6 +22,7 @@ export default function NewsDetailPage() {
   const [publishDate, setPublishDate] = useState("");
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
+  const [view, setView] = useState(0);
   const [htmlContent, setHtmlContent] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -54,6 +56,13 @@ export default function NewsDetailPage() {
     }
   };
   useEffect(() => {
+    const countview = setTimeout(async () => {
+      const ipv4 = await ipify();
+      newsAPI.addView({
+        newsId: id,
+        ipV4: ipv4,
+      });
+    }, 2 * 60 * 1000);
     const fetchNewsById = async () => {
       try {
         const response = await newsAPI.getNewsById(id);
@@ -63,6 +72,7 @@ export default function NewsDetailPage() {
         setTitle(data.title);
         setSummary(data.summary);
         setAuthorName(data.authorName);
+        setView(data.view);
         setCategory({
           id: data.category.id,
           content: data.category.content,
@@ -71,13 +81,13 @@ export default function NewsDetailPage() {
         console.error("Lỗi khi gọi API News:", error);
       }
     };
-
     fetchNewsById();
     fetchComment();
     const token = localStorage.getItem("token");
     if (token) {
       setIsLoggedIn(true);
     }
+    return () => clearTimeout(countview);
   }, []);
 
   const handleSubmit = async () => {
@@ -123,7 +133,8 @@ export default function NewsDetailPage() {
               <span id="category">{category.content}</span>
             </div>
             <div>
-              <span>{authorName}</span> |<span> {publishDate}</span> |
+              <span>Tác giả: {authorName}</span> |{" "}
+              <span>Đăng vào {publishDate}</span> |<span>Lượt xem: {view}</span>
             </div>
           </div>
 
