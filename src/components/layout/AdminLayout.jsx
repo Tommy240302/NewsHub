@@ -21,6 +21,8 @@ import PostAddIcon from '@mui/icons-material/PostAdd';
 import PeopleIcon from '@mui/icons-material/People';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import CategoryIcon from '@mui/icons-material/Category';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd'; // <-- IMPORT ICON MỚI CHO YÊU CẦU TÁC GIẢ
 
 const drawerWidth = 240;
 
@@ -39,21 +41,30 @@ const AdminLayout = () => {
     navigate('/admin/login');
   };
 
+  // Hàm kiểm tra xem một đường dẫn có đang được chọn hay không
+  const isSelected = (path) => {
+    // Xử lý trường hợp dashboard là route index
+    if (path === '/admin/dashboard' && location.pathname === '/admin') {
+      return true;
+    }
+    return location.pathname === path;
+  };
+
   const drawer = (
     <div>
       <Box
         sx={{
-          height: 64, 
+          height: 64,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          
+
           backgroundColor: theme.palette.primary.main,
           color: theme.palette.primary.contrastText,
-          p: 2, 
-          cursor: 'pointer', 
+          p: 2,
+          cursor: 'pointer',
         }}
-        onClick={() => navigate('/admin/dashboard')} 
+        onClick={() => navigate('/admin/dashboard')}
       >
         <Typography variant="h6" noWrap>
           Admin Home
@@ -68,16 +79,16 @@ const AdminLayout = () => {
               justifyContent: 'flex-start',
               py: 1.5,
               px: 2,
-              color: location.pathname === '/admin' || location.pathname === '/admin/dashboard'
-                      ? theme.palette.primary.main 
-                      : theme.palette.text.secondary, 
+              color: isSelected('/admin/dashboard')
+                ? theme.palette.primary.main
+                : theme.palette.text.secondary,
               '&:hover': {
-                backgroundColor: theme.palette.action.hover, 
-                color: theme.palette.primary.main, 
+                backgroundColor: theme.palette.action.hover,
+                color: theme.palette.primary.main,
               },
               backgroundColor:
-                location.pathname === '/admin' || location.pathname === '/admin/dashboard'
-                  ? theme.palette.action.selected 
+                isSelected('/admin/dashboard')
+                  ? theme.palette.action.selected
                   : 'transparent',
             }}
             onClick={() => navigate('/admin/dashboard')}
@@ -97,15 +108,15 @@ const AdminLayout = () => {
               justifyContent: 'flex-start',
               py: 1.5,
               px: 2,
-              color: location.pathname === '/admin/posts'
-                      ? theme.palette.primary.main
-                      : theme.palette.text.secondary,
+              color: isSelected('/admin/posts')
+                ? theme.palette.primary.main
+                : theme.palette.text.secondary,
               '&:hover': {
                 backgroundColor: theme.palette.action.hover,
                 color: theme.palette.primary.main,
               },
               backgroundColor:
-                location.pathname === '/admin/posts'
+                isSelected('/admin/posts')
                   ? theme.palette.action.selected
                   : 'transparent',
             }}
@@ -126,15 +137,15 @@ const AdminLayout = () => {
               justifyContent: 'flex-start',
               py: 1.5,
               px: 2,
-              color: location.pathname === '/admin/users'
-                      ? theme.palette.primary.main
-                      : theme.palette.text.secondary,
+              color: isSelected('/admin/users')
+                ? theme.palette.primary.main
+                : theme.palette.text.secondary,
               '&:hover': {
                 backgroundColor: theme.palette.action.hover,
                 color: theme.palette.primary.main,
               },
               backgroundColor:
-                location.pathname === '/admin/users'
+                isSelected('/admin/users')
                   ? theme.palette.action.selected
                   : 'transparent',
             }}
@@ -147,6 +158,35 @@ const AdminLayout = () => {
           </Button>
         </ListItem>
 
+        {/* Mục QUẢN LÝ THỂ LOẠI */}
+        <ListItem disablePadding>
+          <Button
+            fullWidth
+            sx={{
+              justifyContent: 'flex-start',
+              py: 1.5,
+              px: 2,
+              color: isSelected('/admin/categories')
+                ? theme.palette.primary.main
+                : theme.palette.text.secondary,
+              '&:hover': {
+                backgroundColor: theme.palette.action.hover,
+                color: theme.palette.primary.main,
+              },
+              backgroundColor:
+                isSelected('/admin/categories')
+                  ? theme.palette.action.selected
+                  : 'transparent',
+            }}
+            onClick={() => navigate('/admin/categories')}
+          >
+            <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>
+              <CategoryIcon />
+            </ListItemIcon>
+            <ListItemText primary="Quản lý Thể loại" />
+          </Button>
+        </ListItem>
+
         {/* Mục Thống kê */}
         <ListItem disablePadding>
           <Button
@@ -155,15 +195,15 @@ const AdminLayout = () => {
               justifyContent: 'flex-start',
               py: 1.5,
               px: 2,
-              color: location.pathname === '/admin/statistics'
-                      ? theme.palette.primary.main
-                      : theme.palette.text.secondary,
+              color: isSelected('/admin/statistics')
+                ? theme.palette.primary.main
+                : theme.palette.text.secondary,
               '&:hover': {
                 backgroundColor: theme.palette.action.hover,
                 color: theme.palette.primary.main,
               },
               backgroundColor:
-                location.pathname === '/admin/statistics'
+                isSelected('/admin/statistics')
                   ? theme.palette.action.selected
                   : 'transparent',
             }}
@@ -176,8 +216,37 @@ const AdminLayout = () => {
           </Button>
         </ListItem>
 
-        {/* Mục Đăng xuất */}
+        {/* MỤC QUẢN LÝ YÊU CẦU TÁC GIẢ (MỚI THÊM) */}
         <ListItem disablePadding>
+          <Button
+            fullWidth
+            sx={{
+              justifyContent: 'flex-start',
+              py: 1.5,
+              px: 2,
+              color: isSelected('/admin/author-requests')
+                ? theme.palette.primary.main
+                : theme.palette.text.secondary,
+              '&:hover': {
+                backgroundColor: theme.palette.action.hover,
+                color: theme.palette.primary.main,
+              },
+              backgroundColor:
+                isSelected('/admin/author-requests')
+                  ? theme.palette.action.selected
+                  : 'transparent',
+            }}
+            onClick={() => navigate('/admin/author-requests')}
+          >
+            <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>
+              <AssignmentIndIcon />
+            </ListItemIcon>
+            <ListItemText primary="Quản lý Yêu cầu Tác giả" />
+          </Button>
+        </ListItem>
+
+        {/* Mục Đăng xuất */}
+        <ListItem disablePadding sx={{ mt: 'auto' }}> {/* Đẩy nút đăng xuất xuống cuối */}
           <Button
             fullWidth
             sx={{
@@ -211,7 +280,7 @@ const AdminLayout = () => {
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
           backgroundColor: theme.palette.primary.main,
-          boxShadow: theme.shadows[3], 
+          boxShadow: theme.shadows[3],
         }}
       >
         <Toolbar>
@@ -224,7 +293,10 @@ const AdminLayout = () => {
           >
             <MenuIcon />
           </IconButton>
-          
+          {/* Bạn có thể thêm tiêu đề trang hiện tại tại đây */}
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+            Admin Panel
+          </Typography>
         </Toolbar>
       </AppBar>
       <Box
@@ -244,7 +316,7 @@ const AdminLayout = () => {
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: drawerWidth,
-              
+
             },
           }}
         >
@@ -257,7 +329,7 @@ const AdminLayout = () => {
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: drawerWidth,
-              
+
             },
           }}
           open
@@ -273,7 +345,7 @@ const AdminLayout = () => {
           width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-        <Toolbar /> 
+        <Toolbar />
         <Outlet />
       </Box>
     </Box>

@@ -17,9 +17,11 @@ import SaveNews from "./features/pages/SaveNews";
 import RequestAuthor from "./features/user/RequestAuthor";
 
 import AdminLoginPage from "./features/admin/loginAdmin/AdminLoginPage";
+import CategoriesAD from './features/admin/categoryAdmin/CategoriesAD';
 import DashboardAdmin from "./features/admin/dashboardAdmin/DashboardAdmin";
 import PostsAD from "./features/admin/postsAdmin/PostsAD";
 import UsersAD from "./features/admin/usersAdmin/UsersAD";
+import AuthorRequestsManagement from "./features/admin/authorRequestsAdmin/AuthorRequestsManagement"; 
 import StatisticsAD from "./features/admin/statisticsAdmin/StatisticsAD";
 import CreateNews from "./features/author/CreateNews";
 import ProtectedRoute from "./utils/ProtectedRoute";
@@ -39,8 +41,8 @@ function App() {
         <Route path="hotnews" element={<HotNews />} />
         <Route path="trendnews" element={<TrendNews />} />
         <Route path="userprofile" element={<UserProfile />} />
-        <Route path="savenews" element={<SaveNews />} />
-        <Route path="request-author" element={<RequestAuthor />} />
+        <Route path=" " element={<SaveNews />} />
+        <Route path="request-author" element={<RequestAuthor />} /> {/* <-- Giữ từ nhánh của bạn */}
       </Route>
       {/* Trang không dùng layout */}
       <Route path="/createnews" element={<CreateNews />} />
@@ -54,6 +56,8 @@ function App() {
           <Route path="dashboard" element={<DashboardAdmin />} />
           <Route path="posts" element={<PostsAD />} />
           <Route path="users" element={<UsersAD />} />
+          <Route path="author-requests" element={<AuthorRequestsManagement />} />
+          <Route path="categories" element={<CategoriesAD />} /> {/* <-- Giữ từ nhánh mới */}
           <Route path="statistics" element={<StatisticsAD />} />
         </Route>
       </Route>
@@ -78,7 +82,7 @@ function App() {
             <a href="/">Về trang chủ</a>
           </div>
         }
-      />
+      /> {/* <-- Giữ từ nhánh của bạn */}
     </Routes>
   );
 }
