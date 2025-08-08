@@ -7,21 +7,26 @@ import AdminLayout from "./components/layout/AdminLayout";
 import HomePage from "./features/home/HomePage";
 import AboutPage from "./features/about/AboutPage";
 import ContactPage from "./features/contact/ContactPage";
+import HomePage2 from "./features/home/HomePage2";
+import RequestAuthor from "./features/user/RequestAuthor";
+import NewsDetailPage from "./features/news/NewsDetail";
 
 import Login from "./features/auth/Login";
 import SignUp from "./features/auth/SignUp";
 import HotNews from "./features/pages/HotNews";
 import TrendNews from "./features/pages/TrendNews";
 import UserProfile from "./features/auth/UserProfile";
+import UserProfile2 from "./features/auth/UserProfile2";
 import SaveNews from "./features/pages/SaveNews";
-import RequestAuthor from "./features/user/RequestAuthor";
+import CategoryList from "./features/author/CategoryList";
+import ListNews from "./components/ui/ListNews";
 
 import AdminLoginPage from "./features/admin/loginAdmin/AdminLoginPage";
 import CategoriesAD from './features/admin/categoryAdmin/CategoriesAD';
 import DashboardAdmin from "./features/admin/dashboardAdmin/DashboardAdmin";
 import PostsAD from "./features/admin/postsAdmin/PostsAD";
 import UsersAD from "./features/admin/usersAdmin/UsersAD";
-import AuthorRequestsManagement from "./features/admin/authorRequestsAdmin/AuthorRequestsManagement"; 
+import AuthorRequestsManagement from "./features/admin/authorRequestsAdmin/AuthorRequestsManagement";
 import StatisticsAD from "./features/admin/statisticsAdmin/StatisticsAD";
 import CreateNews from "./features/author/CreateNews";
 import ProtectedRoute from "./utils/ProtectedRoute";
@@ -40,12 +45,21 @@ function App() {
         <Route path="signup" element={<SignUp />} />
         <Route path="hotnews" element={<HotNews />} />
         <Route path="trendnews" element={<TrendNews />} />
+
+        {/* Các route từ nhánh DAIFEE và test được kết hợp */}
+        <Route path="request-author" element={<RequestAuthor />} />
+        <Route path="news/:id" element={<NewsDetailPage />} />
         <Route path="userprofile" element={<UserProfile />} />
-        <Route path=" " element={<SaveNews />} />
-        <Route path="request-author" element={<RequestAuthor />} /> {/* <-- Giữ từ nhánh của bạn */}
+        <Route path="savenews" element={<SaveNews />} />
+        <Route path="userprofile2" element={<UserProfile2 />} />
+        <Route path="category" element={<CategoryList />} />
+        <Route path="listnews" element={<ListNews />} />
+        <Route path="home2" element={<HomePage2 />} />
       </Route>
+      
       {/* Trang không dùng layout */}
       <Route path="/createnews" element={<CreateNews />} />
+
       {/* Admin Login */}
       <Route path="/admin/login" element={<AdminLoginPage />} />
 
@@ -57,7 +71,7 @@ function App() {
           <Route path="posts" element={<PostsAD />} />
           <Route path="users" element={<UsersAD />} />
           <Route path="author-requests" element={<AuthorRequestsManagement />} />
-          <Route path="categories" element={<CategoriesAD />} /> {/* <-- Giữ từ nhánh mới */}
+          <Route path="categories" element={<CategoriesAD />} />
           <Route path="statistics" element={<StatisticsAD />} />
         </Route>
       </Route>
@@ -73,16 +87,17 @@ function App() {
           </div>
         }
       />
+      {/* Route forbidden từ nhánh DAIFEE, tôi đã giữ lại nhưng chỉnh sửa để tránh trùng lặp */}
       <Route
         path="/forbidden"
         element={
           <div style={{ textAlign: "center", marginTop: "50px" }}>
-            <h1>404 - Không tìm thấy trang</h1>
-            <p>Trang bạn đang tìm kiếm không tồn tại.</p>
+            <h1>403 - Không có quyền truy cập</h1>
+            <p>Bạn không có quyền truy cập vào trang này.</p>
             <a href="/">Về trang chủ</a>
           </div>
         }
-      /> {/* <-- Giữ từ nhánh của bạn */}
+      />
     </Routes>
   );
 }

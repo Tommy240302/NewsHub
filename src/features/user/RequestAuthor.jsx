@@ -14,6 +14,7 @@ import {
   Spin,
   Divider,
   message,
+  InputNumber,
 } from "antd";
 import {
   UploadOutlined,
@@ -63,6 +64,7 @@ export default function FileUploadForm() {
   });
 
   const [reason, setReason] = useState("");
+  const [payment, setPayment] = useState("");
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -114,12 +116,6 @@ export default function FileUploadForm() {
           base64: base64,
         },
       }));
-
-      console.log(
-        `${fieldName} - Data URL:`,
-        dataURL.substring(0, 100) + "..."
-      );
-      console.log(`${fieldName} - Base64:`, base64.substring(0, 100) + "...");
     };
     dataURLReader.readAsDataURL(file);
 
@@ -259,6 +255,15 @@ export default function FileUploadForm() {
       setTypeNotify("error");
       return;
     }
+    if (payment == "" || payment == null) {
+      setModalData({
+        message: "Lỗi",
+        description: "Bạn chưa nhập payment",
+      });
+      setVisible(true);
+      setTypeNotify("error");
+      return;
+    }
 
     setIsSubmitting(true);
     setErrors({});
@@ -282,6 +287,7 @@ export default function FileUploadForm() {
         profileUrl: uploadFile1Promise.url,
         sampleArticles: uploadFile2Promise.url,
         reason: reason,
+        paymentNumber: payment,
       };
 
       // Simulate API call
@@ -303,12 +309,21 @@ export default function FileUploadForm() {
       });
       setDescription("");
     } catch (error) {
+      deleteFile(file1Info.fileId);
+      deleteFile(file2Info.fileId);
       if (error.response && error.response.status === 403) {
-        navigate("/forbidden");
+        setModalData({
+          message: "Chưa đăng nhập",
+          description:
+            "Bạn cần đăng nhập trước khi thực hiện thao tác này. Tự động chuyển sau 3s",
+        });
+        setTypeNotify("info");
+        setVisible(true);
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000);
       }
       if (error.response && error.response.status === 400) {
-        deleteFile(file1Info.fileId);
-        deleteFile(file2Info.fileId);
         setModalData({
           message: "Nhắc nhở",
           description: error.response.data.errorMessage,
@@ -502,6 +517,40 @@ export default function FileUploadForm() {
           </Row>
 
           <Divider />
+          <div style={{ marginBottom: "16px" }}>
+            <Text
+              strong
+              style={{
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
+              Số tài khoản VNPay *
+            </Text>
+            <InputNumber
+              value={payment}
+              stringMode
+              onChange={(e) => setPayment(e)}
+              onBeforeInput={(e) => {
+                if (!/^\d+$/.test(e.data)) {
+                  e.preventDefault();
+                }
+              }}
+              onPaste={(e) => {
+                const pasted = e.clipboardData.getData("text");
+                if (!/^\d+$/.test(pasted)) {
+                  e.preventDefault();
+                }
+              }}
+              placeholder="Số tài khoản"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.7)",
+                width: "100%",
+              }}
+            />
+          </div>
 
           {/* Description */}
           <div style={{ marginBottom: "16px" }}>

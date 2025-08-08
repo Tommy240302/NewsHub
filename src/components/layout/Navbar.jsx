@@ -5,7 +5,10 @@ import {
   UserOutlined,
   BellOutlined,
   LoginOutlined,
-  UserAddOutlined
+  UserAddOutlined,
+  BookOutlined,
+  BoldOutlined,
+  LogoutOutlined
 } from '@ant-design/icons';
 import './Navbar.css';
 import { Link, useNavigate } from 'react-router-dom';
@@ -30,6 +33,16 @@ const Navbar = () => {
     onClick: () => navigate('/userprofile'),
   },
   {
+    key: 'info',
+    label: (
+      <span className="user-menu-item">
+        <BoldOutlined className="user-menu-icon" />
+        Đăng bài
+      </span>
+    ),
+    onClick: () => navigate('/createnews'),
+  },
+  {
     key: 'login',
     label: (
       <span className="user-menu-item">
@@ -49,6 +62,19 @@ const Navbar = () => {
     ),
     onClick: () => navigate('/signup'),
   },
+  {
+    key: 'logout',
+    label: (
+      <span className="user-menu-item">
+        <LoginOutlined className="user-menu-icon" />
+        Đăng xuất
+      </span>
+    ),
+    onClick: () => {
+      localStorage.clear();
+      navigate('/login')
+    }
+  }
 ];
 
 

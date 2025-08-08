@@ -15,8 +15,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 430px;
+  height: fit-content; /* <--- Quan trọng để sticky hoạt động */
+  position: sticky;     /* Giữ cố định */
+  top: 80px;            /* Khoảng cách với top, tùy vào chiều cao navbar */
 }
+
 
 .profile-avatar {
   position: relative;

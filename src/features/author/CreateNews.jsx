@@ -1,4 +1,4 @@
-import React, { useState, useRef, use } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { authorAPI } from "../../common/api";
 import {
   Button,
@@ -21,8 +21,12 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import InlineRichTextEditor from "../../components/ui/RichText";
+
 import { uploadFile } from "../../services/imageKit";
 import NotificationModalFactory from "../../components/NotificationModal/NotificationModalFactory";
+
+import { categoryAPI } from "../../common/api";
+import { SUCCESS_STATUS, FAIL_STATUS } from "../../common/variable-const";
 
 const { TextArea } = Input;
 const { Title, Text } = Typography;
@@ -38,9 +42,10 @@ const CreateNews = () => {
   const mainImageInputRef = useRef(null);
   const titleRef = useRef(null);
   const summaryRef = useRef(null);
-  const [title, setTitle] = useState("Tiêu đề");
+  const [title, setTitle] = useState("");
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [previewHTML, setPreviewHTML] = useState("");
+
   const [summary, setSummary] = useState("Tóm tắt");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -51,20 +56,29 @@ const CreateNews = () => {
     description: "",
   });
 
-  const categories = [
-    {
-      id: 1,
-      content: "Công nghệ",
-    },
-    {
-      id: 2,
-      content: "Chính trị",
-    },
-    {
-      id: 3,
-      content: "Văn hóa",
-    },
-  ];
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await categoryAPI.getAllCategories();
+        const { status, data, errorMessage } = response;
+        if (status === SUCCESS_STATUS) {
+          setCategories(data);
+          if (data && data.length > 0) setSelectedCategory(data[0].id);
+        } else if (status === FAIL_STATUS) {
+          console.error("Lỗi từ API:", errorMessage || "Không thể lấy dữ liệu");
+        }
+      } catch (error) {
+        console.error("Lỗi khi gọi API danh mục:", error);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   // Handle drag start from component panels
   const handleDragStart = (e, type, data = {}) => {
@@ -242,11 +256,23 @@ const CreateNews = () => {
       margin-right: auto;
     }
     .rich-text-content { margin: 10px 0; line-height: 1.5; }
-    .summary {padding-left: 5px}
+    .summary {
+     font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+    }
+    #title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #1a237e;
+    line-height: 1.3;
+}
   </style>
 </head>
 <body>
-<h1>${title}</h1>
+<h1 id="title">${title}</h1>
 <h4 class="summary">${summary}</h4>
 ${htmlContent}
 </body>
@@ -330,14 +356,14 @@ ${htmlContent}
 
       const handleCreate = async () => {
         try {
-          const content = fullHTMLGenerate(htmlContent);
+          // const content = fullHTMLGenerate(htmlContent);
           const mainImageUrl = updatedMainImage?.uploadedUrl || null;
           const news = {
             title: title,
             summary: summary,
-            content: content,
-            image: mainImageUrl,
-            categoryId: 1,
+            content: htmlContent,
+            image: mainImageUrl, // mainImageUrl is set from the main image upload (ảnh hiển thị)
+            categoryId: selectedCategory,
           };
           const response = await authorAPI.createnews(news);
           // console.log("Tạo bài viết thành công:", response.data);
@@ -606,31 +632,26 @@ ${htmlContent}
           </Text>
         </div>
 
-        <div>
-          <h1
-            ref={titleRef}
-            spellCheck={false}
-            contentEditable
-            suppressContentEditableWarning
-            style={{ border: "1px solid #ccc", padding: "4px", margin: "16px" }}
-          >
-            {title}
-          </h1>
-          <h4
-            ref={summaryRef}
-            spellCheck={false}
-            contentEditable
-            suppressContentEditableWarning
-            style={{
-              fontStyle: "italic",
-              padding: "4px",
-              border: "1px solid #ccc",
-              margin: "16px",
-              marginTop: "0",
-            }}
-          >
-            {summary}
-          </h4>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+            margin: 16,
+          }}
+        >
+          <Input
+            placeholder="Nhập tiêu đề bài viết"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            style={{ fontWeight: 600, fontSize: 20, marginBottom: 8 }}
+          />
+          <Input
+            placeholder="Nhập tóm tắt bài viết"
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
+            style={{ fontStyle: "italic", fontSize: 16 }}
+          />
         </div>
 
         <div
@@ -849,8 +870,12 @@ ${htmlContent}
               Chủ đề
             </Text>
             <Select
-              defaultValue={categories[0]?.content}
+              value={selectedCategory}
               style={{ width: "100%" }}
+              onChange={setSelectedCategory}
+              loading={loadingCategories}
+              placeholder={loadingCategories ? "Đang tải..." : "Chọn chủ đề"}
+              disabled={loadingCategories || categories.length === 0}
             >
               {categories.map((category) => (
                 <Option value={category.id} key={category.id}>

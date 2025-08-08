@@ -71,14 +71,31 @@ export const authAPI = {
   
   // Reset mật khẩu
   resetPassword: (token, newPassword) => api.post('/auth/reset-password', { token, newPassword }),
+
+};
+
+export const userAPI = {
+  getDetailUser: (id) => api.get('/users/' + id),
+  // Lấy user profile của user đang đăng nhập qua endpoint /users/me
+  getMe: () => api.get('/users/me'),
+  requestAuthor: (requestAuthor) => api.post('/users/request-author', requestAuthor),
+  addComment: (requestComment) => api.post('/users/addComment', requestComment)
 };
 
 export const authorAPI = {
   createnews: (news) => api.post('/author/create', news)
-} 
+};
 
-export const userAPI = {
-  requestAuthor: (requestAuthor) => api.post('/users/request-author', requestAuthor)
-}
+
+export const newsAPI = {
+  getAllNews: () => api.get('/news'),
+  getNewsById: (id)=> api.get('/news/'+id),
+  getCommentByNewsId: (id)=> api.get('/news/comment/'+id),
+  addView: (view)=> api.patch('/news/addView', view),
+};
+
+export const categoryAPI = {
+  getAllCategories: () => api.get('/categories'),
+};
 
 export default api; 
