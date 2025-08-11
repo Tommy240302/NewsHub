@@ -9,16 +9,6 @@ import {
 } from '@ant-design/icons';
 import { categoryAPI } from '../../common/api';
 
-// Hàm tạo slug từ content
-const toSlug = (str) => {
-  return str
-    .normalize("NFD") // tách dấu
-    .replace(/[\u0300-\u036f]/g, "") // xóa dấu
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-'); // khoảng trắng -> -
-};
-
 const Sidebar = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -62,7 +52,7 @@ const Sidebar = () => {
       <Menu
         mode="inline"
         defaultSelectedKeys={['home']}
-        defaultOpenKeys={['topics']} // mở sẵn
+        defaultOpenKeys={['topics']}
         style={{ height: '100%', borderRight: 0 }}
       >
         <Menu.Item key="home" icon={<HomeOutlined />}>
@@ -85,7 +75,8 @@ const Sidebar = () => {
           ) : categories.length > 0 ? (
             categories.map((cat) => (
               <Menu.Item key={cat.id}>
-                <Link to={`/chuyen-muc/${toSlug(cat.content)}`}>
+                {/* Dùng trực tiếp id thay vì slug */}
+                <Link to={`/chuyen-muc/${cat.id}`}>
                   {cat.content}
                 </Link>
               </Menu.Item>

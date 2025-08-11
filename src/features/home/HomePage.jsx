@@ -10,15 +10,18 @@ import './HomePage2.css';
 
 const { Title, Text, Paragraph } = Typography;
 
+const safeText = (val) => (typeof val === 'string' ? val : '');
+const safeNumber = (val) => (typeof val === 'number' ? val : 0);
+
 const HomePage = () => {
   const [featuredNews, setFeaturedNews] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const trendingNews = featuredNews.slice(0, 4).map(item => ({
     id: item.id,
-    title: item.title,
-    time: new Date(item.publishedAt).toLocaleTimeString(),
-    views: item.view ? `${(item.view / 1000).toFixed(1)}K` : '1.2K'
+    title: safeText(item.title),
+    time: item.publishedAt ? new Date(item.publishedAt).toLocaleTimeString() : '',
+    views: safeNumber(item.view) ? `${(item.view / 1000).toFixed(1)}K` : '1.2K'
   }));
 
   useEffect(() => {
@@ -50,19 +53,19 @@ const HomePage = () => {
           <Carousel autoplay dotPosition='bottom' effect='fade' style={{ marginBottom: 24 }}>
             {featuredNews.map(news => (
               <div key={news.id}>
-                <div className="carousel-slide" style={{ backgroundImage: `url(${news.image})` }}>
+                <div className="carousel-slide" style={{ backgroundImage: `url(${safeText(news.image)})` }}>
                   <div style={{ color: 'white' }}>
                     <Tag color={news.hot ? 'red' : 'blue'} style={{ marginBottom: 8 }}>
-                      {news.hot ? <FireOutlined /> : <StarOutlined />} {news.category}
+                      {news.hot ? <FireOutlined /> : <StarOutlined />} {safeText(news.category)}
                     </Tag>
                     <Title level={2} style={{ color: 'white', marginBottom: 8 }}>
-                      {news.title}
+                      {safeText(news.title)}
                     </Title>
                     <Paragraph style={{ color: 'white', fontSize: 16, marginBottom: 16 }}>
-                      {news.summary}
+                      {safeText(news.summary)}
                     </Paragraph>
                     <Text style={{ color: 'rgba(255,255,255,0.8)' }}>
-                      {news.publishedAt ? new Date(news.publishedAt).toLocaleString() : news.time}
+                      {news.publishedAt ? new Date(news.publishedAt).toLocaleString() : safeText(news.time)}
                     </Text>
                   </div>
                 </div>
@@ -78,7 +81,12 @@ const HomePage = () => {
               <Row gutter={[16, 16]}>
                 {featuredNews.map(news => (
                   <Col xs={24} md={12} key={news.id}>
-                    <NewsCard news={news} />
+                    <NewsCard news={{
+                      ...news,
+                      title: safeText(news.title),
+                      summary: safeText(news.summary),
+                      category: safeText(news.category)
+                    }} />
                   </Col>
                 ))}
               </Row>

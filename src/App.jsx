@@ -10,6 +10,7 @@ import ContactPage from "./features/contact/ContactPage";
 import HomePage2 from "./features/home/HomePage2";
 import RequestAuthor from "./features/user/RequestAuthor";
 import NewsDetailPage from "./features/news/NewsDetail";
+import CategoryPage from "./features/pages/CategoryPage";
 
 import Login from "./features/auth/Login";
 import SignUp from "./features/auth/SignUp";
@@ -43,7 +44,7 @@ function App() {
         <Route path="signup" element={<SignUp />} />
         <Route path="hotnews" element={<HotNews />} />
         <Route path="trendnews" element={<TrendNews />} />
-
+        <Route path="chuyen-muc/:id" element={<CategoryPage />} />
         <Route path="request-author" element={<RequestAuthor />} />
         <Route path="news/:id" element={<NewsDetailPage />} />
 
