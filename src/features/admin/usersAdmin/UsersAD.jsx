@@ -61,7 +61,7 @@ const UsersAD = () => {
         isEnabled: true,
         phone: '',
         avatar: '',
-        roleNames: ['USER'], // Mặc định gán vai trò 'USER' khi thêm mới
+        roleNames: ['READER'], // Mặc định gán vai trò 'READER' khi thêm mới
     });
 
     // Hàm để tải danh sách người dùng từ backend, có hỗ trợ tìm kiếm
@@ -202,7 +202,7 @@ const UsersAD = () => {
             isEnabled: true,
             phone: '',
             avatar: '',
-            roleNames: ['USER'], // Mặc định vai trò là 'USER'
+            roleNames: ['READER'], // Mặc định vai trò là 'READER'
         });
         setOpenAddDialog(true);
     };
@@ -239,7 +239,7 @@ const UsersAD = () => {
             if (payload.roleNames && Array.isArray(payload.roleNames)) {
                 payload.roleNames = Array.from(new Set(payload.roleNames)); // Đảm bảo là mảng unique string
             } else {
-                payload.roleNames = ['USER']; // Mặc định nếu không có vai trò nào được chọn
+                payload.roleNames = ['READER']; // Mặc định nếu không có vai trò nào được chọn
             }
 
             // Convert dateOfBirth string to Date object
@@ -531,7 +531,7 @@ const UsersAD = () => {
                     <TextField
                         margin="dense"
                         name="roleNames"
-                        label="Vai trò (phân tách bởi dấu phẩy, VD: USER,ADMIN)"
+                        label="Vai trò (phân tách bởi dấu phẩy, VD: READER,AUTHOR)"
                         type="text"
                         fullWidth
                         variant="standard"
@@ -644,7 +644,7 @@ const UsersAD = () => {
                     <TextField
                         margin="dense"
                         name="roleNames"
-                        label="Vai trò (phân tách bởi dấu phẩy, VD: USER,ADMIN)"
+                        label="Vai trò (phân tách bởi dấu phẩy, VD: READER,AUTHOR)"
                         type="text"
                         fullWidth
                         variant="standard"

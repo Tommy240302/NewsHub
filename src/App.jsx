@@ -101,3 +101,8 @@ function App() {
           </div>
         }
       />
+    </Routes>
+  );
+}
+
+export default App;
