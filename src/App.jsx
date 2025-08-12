@@ -10,6 +10,7 @@ import ContactPage from "./features/contact/ContactPage";
 import HomePage2 from "./features/home/HomePage2";
 import RequestAuthor from "./features/user/RequestAuthor";
 import NewsDetailPage from "./features/news/NewsDetail";
+import CategoryPage from "./features/pages/CategoryPage";
 
 import Login from "./features/auth/Login";
 import SignUp from "./features/auth/SignUp";
@@ -45,8 +46,9 @@ function App() {
         <Route path="signup" element={<SignUp />} />
         <Route path="hotnews" element={<HotNews />} />
         <Route path="trendnews" element={<TrendNews />} />
-
-        {/* Các route từ nhánh DAIFEE và test được kết hợp */}
+        
+        {/* Kết hợp các route từ cả hai nhánh */}
+        <Route path="chuyen-muc/:id" element={<CategoryPage />} />
         <Route path="request-author" element={<RequestAuthor />} />
         <Route path="news/:id" element={<NewsDetailPage />} />
         <Route path="userprofile" element={<UserProfile />} />
@@ -87,7 +89,8 @@ function App() {
           </div>
         }
       />
-      {/* Route forbidden từ nhánh DAIFEE, tôi đã giữ lại nhưng chỉnh sửa để tránh trùng lặp */}
+      
+      {/* Route forbidden từ nhánh DAIFEE, tôi đã giữ lại và tối ưu */}
       <Route
         path="/forbidden"
         element={
@@ -98,8 +101,3 @@ function App() {
           </div>
         }
       />
-    </Routes>
-  );
-}
-
-export default App;

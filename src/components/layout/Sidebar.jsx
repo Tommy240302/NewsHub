@@ -1,24 +1,40 @@
-import { Menu } from 'antd';
+import { useEffect, useState } from 'react';
+import { Menu, Spin } from 'antd';
 import { Link } from 'react-router-dom';
 import {
   HomeOutlined,
   FireOutlined,
   StarOutlined,
   MenuOutlined,
-  TrophyOutlined,
-  GlobalOutlined,
-  TeamOutlined,
-  LaptopOutlined,
-  HeartOutlined,
-  SmileOutlined,
-  BookOutlined,
-  ReadOutlined,
-  BarChartOutlined,
-  DribbbleOutlined,
 } from '@ant-design/icons';
-
+import { categoryAPI } from '../../common/api';
 
 const Sidebar = () => {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const res = await categoryAPI.getAllCategories();
+        console.log('Categories API result:', res);
+
+        if (res.status === 'Success' && Array.isArray(res.data)) {
+          setCategories(res.data);
+        } else {
+          console.error('Lỗi lấy category:', res.errorMessage || res.message);
+        }
+      } catch (err) {
+        console.error('Lỗi gọi API categories:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   return (
     <div
       style={{
@@ -36,6 +52,7 @@ const Sidebar = () => {
       <Menu
         mode="inline"
         defaultSelectedKeys={['home']}
+        defaultOpenKeys={['topics']}
         style={{ height: '100%', borderRight: 0 }}
       >
         <Menu.Item key="home" icon={<HomeOutlined />}>
@@ -51,36 +68,24 @@ const Sidebar = () => {
         </Menu.Item>
 
         <Menu.SubMenu key="topics" icon={<MenuOutlined />} title="Chuyên mục">
-          <Menu.Item key="bongda" icon={<TrophyOutlined />}>
-            <Link to="/chuyen-muc/bong-da">Bóng đá</Link>
-          </Menu.Item>
-          <Menu.Item key="thegioi" icon={<GlobalOutlined />}>
-            <Link to="/chuyen-muc/the-gioi">Thế giới</Link>
-          </Menu.Item>
-          <Menu.Item key="xahoi" icon={<TeamOutlined />}>
-            <Link to="/chuyen-muc/xa-hoi">Xã hội</Link>
-          </Menu.Item>
-          <Menu.Item key="vanhoa" icon={<ReadOutlined />}>
-            <Link to="/chuyen-muc/van-hoa">Văn hóa</Link>
-          </Menu.Item>
-          <Menu.Item key="kinhte" icon={<BarChartOutlined />}>
-            <Link to="/chuyen-muc/kinh-te">Kinh tế</Link>
-          </Menu.Item>
-          <Menu.Item key="giaoduc" icon={<BookOutlined />}>
-            <Link to="/chuyen-muc/giao-duc">Giáo dục</Link>
-          </Menu.Item>
-          <Menu.Item key="thethao" icon={<DribbbleOutlined />}>
-            <Link to="/chuyen-muc/the-thao">Thể thao</Link>
-          </Menu.Item>
-          <Menu.Item key="giaitri" icon={<SmileOutlined />}>
-            <Link to="/chuyen-muc/giai-tri">Giải trí</Link>
-          </Menu.Item>
-          <Menu.Item key="doisong" icon={<HeartOutlined />}>
-            <Link to="/chuyen-muc/doi-song">Đời sống</Link>
-          </Menu.Item>
-          <Menu.Item key="congnghe" icon={<LaptopOutlined />}>
-            <Link to="/chuyen-muc/cong-nghe">Công nghệ</Link>
-          </Menu.Item>
+          {loading ? (
+            <Menu.Item key="loading" disabled>
+              <Spin size="small" /> Đang tải...
+            </Menu.Item>
+          ) : categories.length > 0 ? (
+            categories.map((cat) => (
+              <Menu.Item key={cat.id}>
+                {/* Dùng trực tiếp id thay vì slug */}
+                <Link to={`/chuyen-muc/${cat.id}`}>
+                  {cat.content}
+                </Link>
+              </Menu.Item>
+            ))
+          ) : (
+            <Menu.Item key="no-category" disabled>
+              Không có chuyên mục
+            </Menu.Item>
+          )}
         </Menu.SubMenu>
       </Menu>
     </div>

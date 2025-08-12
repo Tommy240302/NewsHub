@@ -96,6 +96,7 @@ export const newsAPI = {
 
 export const categoryAPI = {
   getAllCategories: () => api.get('/categories'),
+  getNewsByCategory: (id) => api.get(`/categories/${id}/news`),
 };
 
 export default api; 
