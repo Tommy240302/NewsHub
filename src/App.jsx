@@ -90,7 +90,7 @@ function App() {
         }
       />
       
-      {/* Route forbidden từ nhánh DAIFEE, tôi đã giữ lại và tối ưu */}
+      {/* Route forbidden */}
       <Route
         path="/forbidden"
         element={
@@ -101,3 +101,8 @@ function App() {
           </div>
         }
       />
+    </Routes>
+  );
+}
+
+export default App;
