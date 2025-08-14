@@ -66,7 +66,7 @@ const Signup = () => {
 
     if (response.status === SUCCESS_STATUS) {
       alert('Đăng ký thành công!');
-      navigate('/home'); 
+      navigate('/login'); 
     } else {
       alert(response.errorMessage || 'Đăng ký thất bại!');
     }

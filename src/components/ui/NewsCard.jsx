@@ -1,12 +1,16 @@
 import { Card, Tag, Typography, Button } from 'antd';
 import { StarOutlined, UserOutlined, FireOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 
 const { Title, Text, Paragraph } = Typography;
 
 const NewsCard = ({ news }) => {
+  const navigate = useNavigate();
+
   return (
     <Card
       hoverable
+      onClick={() => navigate(`/news/${news.id}`)}
       cover={
         <img
           alt={news.title}
@@ -15,8 +19,20 @@ const NewsCard = ({ news }) => {
         />
       }
       actions={[
-        <Button type="text" icon={<StarOutlined />}>Lưu</Button>,
-        <Button type="text" icon={<UserOutlined />}>Chia sẻ</Button>
+        <Button
+          type="text"
+          icon={<StarOutlined />}
+          onClick={(e) => e.stopPropagation()} // ngăn click button trigger navigate
+        >
+          Lưu
+        </Button>,
+        <Button
+          type="text"
+          icon={<UserOutlined />}
+          onClick={(e) => e.stopPropagation()} // ngăn click button trigger navigate
+        >
+          Chia sẻ
+        </Button>
       ]}
     >
       <Card.Meta
@@ -43,4 +59,4 @@ const NewsCard = ({ news }) => {
   );
 };
 
-export default NewsCard; 
+export default NewsCard;

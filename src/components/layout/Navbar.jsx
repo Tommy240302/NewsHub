@@ -8,10 +8,12 @@ import {
   UserAddOutlined,
   BookOutlined,
   BoldOutlined,
+  PullRequestOutlined,
   LogoutOutlined
 } from '@ant-design/icons';
 import './Navbar.css';
 import { Link, useNavigate } from 'react-router-dom';
+import { authAPI } from "../../common/api"; // Giả sử authApi chứa các hàm liên quan đến xác thực
 
 const { Header } = Layout;
 const { Title } = Typography;
@@ -63,18 +65,29 @@ const Navbar = () => {
     onClick: () => navigate('/signup'),
   },
   {
-    key: 'logout',
+    key: 'request-author',
     label: (
       <span className="user-menu-item">
-        <LoginOutlined className="user-menu-icon" />
-        Đăng xuất
+        <PullRequestOutlined className="user-menu-icon" />
+        Yêu cầu làm tác giả
       </span>
     ),
-    onClick: () => {
-      localStorage.clear();
-      navigate('/login')
+    onClick: () => navigate('/request-author'),
+  },
+ {
+  key: 'logout',
+  label: (
+    <span className="user-menu-item">
+      <LogoutOutlined className="user-menu-icon" />
+      Đăng xuất
+    </span>
+  ),
+  onClick: () => {
+    localStorage.clear();  // Xóa toàn bộ localStorage (bao gồm token)
+    navigate('/login');    // Chuyển về trang login
     }
   }
+
 ];
 
 

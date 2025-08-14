@@ -13,15 +13,24 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+ if (token) {
+     config.headers.Authorization = `Bearer ${token}`;
+   }
+   if (token) {
+     config.headers.Authorization = `Bearer ${token}`;
+   } else {
+     // QUAN TRỌNG: không có token thì xoá header để /auth/sign-in không bị gửi token cũ
+     delete config.headers.Authorization;
+   }
+   // an toàn tuyệt đối: không gắn token cho request đăng nhập/đăng ký
+   if (config.url && (config.url.includes('/auth/sign-in') || config.url.includes('/auth/register'))) {
+     delete config.headers.Authorization;
+   }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
+
 
 // Response interceptor
 api.interceptors.response.use(
