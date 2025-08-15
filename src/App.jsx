@@ -29,6 +29,7 @@ import PostsAD from "./features/admin/postsAdmin/PostsAD";
 import UsersAD from "./features/admin/usersAdmin/UsersAD";
 import AuthorRequestsManagement from "./features/admin/authorRequestsAdmin/AuthorRequestsManagement";
 import StatisticsAD from "./features/admin/statisticsAdmin/StatisticsAD";
+import RoyaltyPayment from "./features/admin/PaymentsAdmin/RoyaltyPayment";
 import CreateNews from "./features/author/CreateNews";
 import ProtectedRoute from "./utils/ProtectedRoute";
 
@@ -75,6 +76,7 @@ function App() {
           <Route path="author-requests" element={<AuthorRequestsManagement />} />
           <Route path="categories" element={<CategoriesAD />} />
           <Route path="statistics" element={<StatisticsAD />} />
+          <Route path="payments" element={<RoyaltyPayment />} />
         </Route>
       </Route>
 
