@@ -6,7 +6,8 @@ import ArticleIcon from '@mui/icons-material/Article';
 import GroupIcon from '@mui/icons-material/Group';
 import LogoutIcon from '@mui/icons-material/Logout';
 import CategoryIcon from '@mui/icons-material/Category';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd'; // <-- Import icon mới cho yêu cầu tác giả
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney'; 
 import { useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240; 
@@ -25,7 +26,8 @@ const AdminSidebar = () => {
     { name: 'Quản lý Bài viết', path: '/admin/posts', icon: <ArticleIcon /> },
     { name: 'Quản lý Người dùng', path: '/admin/users', icon: <GroupIcon /> },
     { name: 'Quản lý Thể loại', path: '/admin/categories', icon: <CategoryIcon /> }, 
-    { name: 'Quản lý Yêu cầu Tác giả', path: '/admin/author-requests', icon: <AssignmentIndIcon /> }, // <-- THÊM MỤC MENU MỚI
+    { name: 'Quản lý Yêu cầu Tác giả', path: '/admin/author-requests', icon: <AssignmentIndIcon /> },
+    { name: 'Thanh toán Nhuận bút', path: '/admin/payments', icon: <AttachMoneyIcon /> },
   ];
 
   return (
