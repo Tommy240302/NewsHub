@@ -22,7 +22,8 @@ import PeopleIcon from '@mui/icons-material/People';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import CategoryIcon from '@mui/icons-material/Category';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd'; // <-- IMPORT ICON MỚI CHO YÊU CẦU TÁC GIẢ
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney'; // <-- THÊM ICON MỚI CHO THANH TOÁN
 
 const drawerWidth = 240;
 
@@ -242,6 +243,35 @@ const AdminLayout = () => {
               <AssignmentIndIcon />
             </ListItemIcon>
             <ListItemText primary="Quản lý Yêu cầu Tác giả" />
+          </Button>
+        </ListItem>
+        
+        {/* MỤC THANH TOÁN NHUẬN BÚT (MỚI THÊM) */}
+        <ListItem disablePadding>
+          <Button
+            fullWidth
+            sx={{
+              justifyContent: 'flex-start',
+              py: 1.5,
+              px: 2,
+              color: isSelected('/admin/payments')
+                ? theme.palette.primary.main
+                : theme.palette.text.secondary,
+              '&:hover': {
+                backgroundColor: theme.palette.action.hover,
+                color: theme.palette.primary.main,
+              },
+              backgroundColor:
+                isSelected('/admin/payments')
+                  ? theme.palette.action.selected
+                  : 'transparent',
+            }}
+            onClick={() => navigate('/admin/payments')}
+          >
+            <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>
+              <AttachMoneyIcon />
+            </ListItemIcon>
+            <ListItemText primary="Thanh toán Nhuận bút" />
           </Button>
         </ListItem>
 
