@@ -31,9 +31,20 @@ const HomePage = () => {
         const newsArray = Array.isArray(res.data)
           ? res.data
           : Array.isArray(res.data?.data)
-          ? res.data.data
-          : [];
-        setFeaturedNews(newsArray);
+            ? res.data.data
+            : [];
+
+        // Lọc bỏ bài viết đã xóa (is_deleted = 1)
+        const filteredNews = newsArray.filter(item => item.isDeleted === false || item.isDeleted === 0);
+
+        // Sắp xếp theo publishedAt giảm dần (tin mới trước)
+        const sortedNews = [...filteredNews].sort((a, b) => {
+          const timeA = new Date(a.publishedAt).getTime();
+          const timeB = new Date(b.publishedAt).getTime();
+          return timeB - timeA;
+        });
+
+        setFeaturedNews(sortedNews);
       } catch (err) {
         setFeaturedNews([]);
       } finally {

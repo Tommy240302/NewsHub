@@ -14,13 +14,22 @@ const HotNews = () => {
     const fetchNews = async () => {
       try {
         const res = await newsAPI.getAllNews();
+        let data = [];
+
         if (Array.isArray(res.data)) {
-          setNewsList(res.data);
+          data = res.data;
         } else if (res.data && Array.isArray(res.data.data)) {
-          setNewsList(res.data.data);
-        } else {
-          setNewsList([]);
+          data = res.data.data;
         }
+
+        // Sắp xếp mới nhất lên đầu
+        const sortedData = [...data].sort((a, b) => {
+          const timeA = new Date(a.publishedAt).getTime();
+          const timeB = new Date(b.publishedAt).getTime();
+          return timeB - timeA; // giảm dần
+        });
+
+        setNewsList(sortedData);
       } catch (err) {
         setNewsList([]);
       } finally {
@@ -29,10 +38,6 @@ const HotNews = () => {
     };
     fetchNews();
   }, []);
-
-  useEffect(() => {
-    console.log('newsList:', newsList);
-  }, [newsList]);
 
   return (
     <Card

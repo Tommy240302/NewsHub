@@ -12,13 +12,18 @@ const ListNews = () => {
     const fetchNews = async () => {
       try {
         const res = await newsAPI.getAllNews();
+        let data = [];
+
         if (Array.isArray(res.data)) {
-          setNewsList(res.data);
+          data = res.data;
         } else if (res.data && Array.isArray(res.data.data)) {
-          setNewsList(res.data.data);
-        } else {
-          setNewsList([]);
+          data = res.data.data;
         }
+
+        // Lọc ra bài viết chưa bị xóa
+        const filtered = data.filter(item => item.is_deleted === 0);
+
+        setNewsList(filtered);
       } catch (err) {
         setNewsList([]);
       } finally {
@@ -27,6 +32,7 @@ const ListNews = () => {
     };
     fetchNews();
   }, []);
+
 
   useEffect(() => {
     console.log('newsList:', newsList);

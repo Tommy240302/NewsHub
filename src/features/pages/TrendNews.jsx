@@ -14,13 +14,22 @@ const TrendNews = () => {
     const fetchNews = async () => {
       try {
         const res = await newsAPI.getAllNews();
+        let data = [];
+
         if (Array.isArray(res.data)) {
-          setNewsList(res.data);
+          data = res.data;
         } else if (res.data && Array.isArray(res.data.data)) {
-          setNewsList(res.data.data);
-        } else {
-          setNewsList([]);
+          data = res.data.data;
         }
+
+        // Sắp xếp giảm dần theo view
+        const sortedData = [...data].sort((a, b) => {
+          const viewsA = Number(a.view) || 0;
+          const viewsB = Number(b.view) || 0;
+          return viewsB - viewsA; // Lớn hơn trước
+        });
+
+        setNewsList(sortedData);
       } catch (err) {
         setNewsList([]);
       } finally {
@@ -29,10 +38,6 @@ const TrendNews = () => {
     };
     fetchNews();
   }, []);
-
-  useEffect(() => {
-    console.log('newsList:', newsList);
-  }, [newsList]);
 
   return (
     <Card
