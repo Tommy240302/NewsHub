@@ -52,7 +52,7 @@ const UserProfile = () => {
     };
 
     if (loading) return <div className="profile-loading">Đang tải...</div>;
-    if (!userData) return <div className="profile-error">Không có dữ liệu người dùng.</div>;
+    if (!userData) return <div className="profile-error">Bạn chưa đăng nhập.</div>;
 
     return (
         <div className="profile-container">
@@ -76,11 +76,9 @@ const UserProfile = () => {
                         <FileTextOutlined /> Hoạt động bình luận
                     </li>
                     <li onClick={() => navigate('/savenews')}>
-                        <FileTextOutlined /> Tin đã lưu
+                        <FileTextOutlined /> Tin đã đăng
                     </li>
-                    <li onClick={() => navigate('')}>
-                        <EyeOutlined /> Tin đã xem
-                    </li>
+                
                     <li onClick={handleLogout}>
                         <LogoutOutlined /> Đăng xuất
                     </li>

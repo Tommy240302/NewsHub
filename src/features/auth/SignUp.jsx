@@ -51,31 +51,31 @@ const Signup = () => {
       return;
     }
 
-    const payload = {
-    email: formData.email,
-    password: formData.password,
-    firstName: formData.firstName,
-    lastName: formData.lastName,
-    phone: formData.phone || "",
-    avatar: formData.avatar || "",
-    
-  };
+ const registerRes = await authAPI.register({
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      password: formData.password,
+    });
 
-    try { 
-    const response = await authAPI.register(payload);
+    if (registerRes.status === SUCCESS_STATUS) {
+      // 2️⃣ Nếu đăng ký thành công, tự động login
+      const loginRes = await authAPI.login({
+        email: formData.email,
+        password: formData.password,
+      });
 
-    if (response.status === SUCCESS_STATUS) {
-      alert('Đăng ký thành công!');
-      navigate('/login'); 
+      if (loginRes.status === SUCCESS_STATUS) {
+        localStorage.setItem('token', loginRes.data.token);
+        localStorage.setItem('id', loginRes.data.user.id);
+        alert('Đăng ký và đăng nhập thành công!');
+        navigate('/home'); // chuyển đến trang chính
+      } else {
+        alert('Đăng ký thành công nhưng đăng nhập thất bại!');
+      }
     } else {
-      alert(response.errorMessage || 'Đăng ký thất bại!');
+      alert(registerRes.errorMessage || 'Đăng ký thất bại!');
     }
-  } catch (error) {
-    console.error('Đăng ký lỗi:', error);
-    alert('Có lỗi xảy ra khi đăng ký!');
-  }
-    // Submit logic ở đây
-    console.log('Dữ liệu đăng ký:', formData);
   };
 
   return (

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { get } from 'lodash';
 
 // Tạo instance axios với cấu hình mặc định
 const api = axios.create({
@@ -101,6 +102,7 @@ export const newsAPI = {
   getNewsById: (id)=> api.get('/news/'+id),
   getCommentByNewsId: (id)=> api.get('/news/comment/'+id),
   addView: (view)=> api.patch('/news/addView', view),
+  getMyNews: () => api.get('/news/my-news'),
 };
 
 export const categoryAPI = {

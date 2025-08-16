@@ -3,12 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { newsAPI } from '../../common/api';
 import { Card, List, Typography, Badge, Spin } from 'antd';
 import './HotNews.css';
+import { useNavigate } from 'react-router-dom';
 
 const { Text } = Typography;
 
 const HotNews = () => {
   const [newsList, setNewsList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -21,9 +23,11 @@ const HotNews = () => {
         } else if (res.data && Array.isArray(res.data.data)) {
           data = res.data.data;
         }
+        
+        const filteredNews = data.filter(item => !item.isDeleted);
 
         // Sắp xếp mới nhất lên đầu
-        const sortedData = [...data].sort((a, b) => {
+        const sortedData = [...filteredNews].sort((a, b) => {
           const timeA = new Date(a.publishedAt).getTime();
           const timeB = new Date(b.publishedAt).getTime();
           return timeB - timeA; // giảm dần
@@ -54,7 +58,10 @@ const HotNews = () => {
           dataSource={newsList}
           locale={{ emptyText: 'Không có bài viết nào.' }}
           renderItem={item => (
-            <List.Item className="hotnews-list-item">
+            <List.Item className="hotnews-list-item"
+              onClick={() => navigate(`/news/${item.id}`)}
+              style={{ cursor: 'pointer' }}
+            >
               <div className="hotnews-card">
                 <img
                   src={item.image}
