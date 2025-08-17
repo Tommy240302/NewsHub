@@ -64,7 +64,7 @@ const UserProfile = () => {
     };
 
     if (loading) return <div className="profile-loading">Đang tải...</div>;
-    if (!userData) return <div className="profile-error">Không có dữ liệu người dùng.</div>;
+    if (!userData) return <div className="profile-error">Bạn chưa đăng nhập.</div>;
 
     return (
         <div className="profile-container">

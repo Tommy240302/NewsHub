@@ -376,7 +376,7 @@ ${htmlContent}
           setComponents([]);
         } catch (error) {
           console.error("Tạo bài viết thất bại:", error);
-          alert("Đăng bài thất bại!");
+          alert("Bạn phải đăng kí trở thành tác giả để có thể đăng tin!");
         } finally {
           setIsSubmitting(false);
         }
