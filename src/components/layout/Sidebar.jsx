@@ -21,7 +21,9 @@ const Sidebar = () => {
         console.log('Categories API result:', res);
 
         if (res.status === 'Success' && Array.isArray(res.data)) {
-          setCategories(res.data);
+ 
+          const activeCategories = res.data.filter(c => !c.isDeleted);
+          setCategories(activeCategories);
         } else {
           console.error('Lỗi lấy category:', res.errorMessage || res.message);
         }
