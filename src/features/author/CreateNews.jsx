@@ -236,8 +236,8 @@ const CreateNews = () => {
       display: block;
     }
     .image-container img { 
-      width: 500px; 
-      height: 700px; 
+      width: 600px; 
+      height: 400px; 
       object-fit: cover; 
       border-radius: 8px; 
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -374,6 +374,9 @@ ${htmlContent}
           setVisible(true);
           setTypeNotify("success");
           setComponents([]);
+          setSummary("");
+          setTitle("");
+          setMainImage(null);
         } catch (error) {
           console.error("Tạo bài viết thất bại:", error);
           alert("Bạn phải đăng kí trở thành tác giả để có thể đăng tin!");
