@@ -18,103 +18,99 @@ import {
     DialogContent,
     DialogActions,
     TextField,
-    FormControlLabel, // Thêm FormControlLabel cho Checkbox
-    Checkbox, // Thêm Checkbox
-    Chip, // Thêm Chip để hiển thị vai trò
-    InputAdornment, // <-- Thêm InputAdornment cho icon tìm kiếm
+    FormControlLabel,
+    Checkbox,
+    Chip,
+    InputAdornment,
+    TablePagination,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import SearchIcon from '@mui/icons-material/Search'; // <-- Thêm SearchIcon
-import apiClient from '../../../api/apiClient'; // Đảm bảo đường dẫn này đúng
+import SearchIcon from '@mui/icons-material/Search';
+import apiClient from '../../../api/apiClient';
 
 const UsersAD = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [searchTerm, setSearchTerm] = useState(''); // <-- State cho từ khóa tìm kiếm
+    const [searchTerm, setSearchTerm] = useState('');
 
-    // State cho dialog chỉnh sửa
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [editFormData, setEditFormData] = useState({
         email: '',
-        password: '', // Không hiển thị mật khẩu hiện tại, yêu cầu nhập lại nếu muốn đổi
+        password: '',
         firstName: '',
         lastName: '',
-        dateOfBirth: '', // Định dạng YYYY-MM-DD cho input type="date"
+        dateOfBirth: '',
         isEnabled: true,
         phone: '',
         avatar: '',
-        roleNames: [], // Mảng các string role names
+        roleNames: [],
     });
 
-    // State cho dialog thêm mới
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [addFormData, setAddFormData] = useState({
         email: '',
         password: '',
         firstName: '',
         lastName: '',
-        dateOfBirth: '', // Định dạng YYYY-MM-DD cho input type="date"
+        dateOfBirth: '',
         isEnabled: true,
         phone: '',
         avatar: '',
-        roleNames: ['READER'], // Mặc định gán vai trò 'READER' khi thêm mới
+        roleNames: ['READER'],
     });
 
-    // Hàm để tải danh sách người dùng từ backend, có hỗ trợ tìm kiếm
-    const fetchUsers = async (currentSearchTerm = searchTerm) => { // <-- Thêm tham số
-        console.log("UsersAD: Bắt đầu gọi fetchUsers...");
+    // States cho phân trang
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [totalElements, setTotalElements] = useState(0);
+
+    const fetchUsers = async (pageNumber = 0, pageSize = rowsPerPage, currentSearchTerm = searchTerm) => {
         try {
             setLoading(true);
             setError(null);
-
-            // Gọi API GET /admin/users với tham số tìm kiếm
             const response = await apiClient.get('/admin/users', {
                 params: {
-                    searchTerm: currentSearchTerm, // <-- Gửi searchTerm
+                    searchTerm: currentSearchTerm,
+                    page: pageNumber,
+                    size: pageSize,
                 }
             });
-            console.log("UsersAD: Phản hồi từ API GET /admin/users:", response.data);
 
             if (response.data && Array.isArray(response.data.content)) {
                 setUsers(response.data.content);
-                console.log("UsersAD: Dữ liệu người dùng đã tải thành công:", response.data.content);
+                setTotalElements(response.data.totalElements);
             } else {
                 const errorMessage = 'Cấu trúc dữ liệu trả về từ backend không hợp lệ hoặc thiếu trường "content".';
                 setError(errorMessage);
-                console.error("UsersAD: Cấu trúc dữ liệu backend không đúng định dạng:", response.data);
             }
         } catch (err) {
             const errorMessage = err.response?.data?.message || err.message || 'Không rõ nguyên nhân.';
             setError('Không thể tải danh sách người dùng. Lỗi: ' + errorMessage);
-            console.error("UsersAD: Lỗi khi tải người dùng (catch block):", err);
         } finally {
             setLoading(false);
-            console.log("UsersAD: Kết thúc fetchUsers.");
         }
     };
 
     useEffect(() => {
-        fetchUsers(); // Gọi lần đầu không có searchTerm (hoặc searchTerm rỗng)
-    }, []);
+        fetchUsers(page, rowsPerPage);
+    }, [page, rowsPerPage]);
 
-    // --- Logic cho Chỉnh sửa Người dùng ---
     const handleEditClick = (user) => {
         setEditingUser(user);
         setEditFormData({
             email: user.email,
-            password: '', // Không hiển thị mật khẩu hiện tại, yêu cầu nhập lại nếu muốn đổi
+            password: '',
             firstName: user.firstName,
             lastName: user.lastName,
-            // Chuyển đổi Date sang chuỗi YYYY-MM-DD cho input type="date"
             dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
             isEnabled: user.isEnabled,
             phone: user.phone,
             avatar: user.avatar,
-            roleNames: Array.isArray(user.roles) ? user.roles : [], // user.roles là Set<String> từ backend, hoặc mảng rỗng
+            roleNames: Array.isArray(user.roles) ? user.roles : [],
         });
         setOpenEditDialog(true);
     };
@@ -132,9 +128,7 @@ const UsersAD = () => {
         });
     };
 
-    // Hàm xử lý thay đổi Role (nếu bạn muốn chọn nhiều vai trò bằng checkbox hoặc select)
     const handleRoleChange = (event) => {
-        // Xử lý khi người dùng nhập chuỗi phân tách bằng dấu phẩy
         const rolesInput = event.target.value;
         const rolesArray = rolesInput.split(',').map(role => role.trim()).filter(role => role !== '');
         setEditFormData({
@@ -145,38 +139,29 @@ const UsersAD = () => {
 
     const handleSaveEdit = async () => {
         if (!editingUser) return;
-
-        console.log("UsersAD: Bắt đầu gọi handleSaveEdit...");
         try {
             setLoading(true);
             const payload = { ...editFormData };
 
-            // Xóa trường password nếu người dùng không nhập gì (không muốn đổi mật khẩu)
             if (payload.password === '') {
                 delete payload.password;
             }
 
-            // Backend mong đợi roleNames là Set<String>, frontend gửi mảng cũng được
             if (payload.roleNames && Array.isArray(payload.roleNames)) {
-                payload.roleNames = Array.from(new Set(payload.roleNames)); // Đảm bảo là mảng unique string
+                payload.roleNames = Array.from(new Set(payload.roleNames));
             } else {
-                payload.roleNames = []; // Đảm bảo là mảng rỗng nếu không có vai trò nào
+                payload.roleNames = [];
             }
 
-            // Convert dateOfBirth string to Date object if needed by backend, or send as string
-            // Backend của bạn nhận Date, nên có thể gửi trực tiếp chuỗi ISO 8601 hoặc new Date()
             if (payload.dateOfBirth) {
                 payload.dateOfBirth = new Date(payload.dateOfBirth);
             } else {
-                payload.dateOfBirth = null; // Gửi null nếu trống để tránh lỗi parsing Date
+                payload.dateOfBirth = null;
             }
 
             const response = await apiClient.put(`/admin/users/${editingUser.id}`, payload);
-            console.log("UsersAD: Phản hồi từ API PUT /admin/users:", response.data);
-
             if (response.data) {
-                // Cập nhật lại danh sách người dùng hoặc tải lại
-                fetchUsers();
+                fetchUsers(page, rowsPerPage);
                 handleCloseEditDialog();
                 alert('Người dùng đã được cập nhật thành công!');
             } else {
@@ -184,14 +169,11 @@ const UsersAD = () => {
             }
         } catch (err) {
             alert('Không thể cập nhật người dùng. Lỗi: ' + (err.response?.data?.message || err.message || 'Không rõ'));
-            console.error("UsersAD: Lỗi khi cập nhật người dùng (catch block):", err);
         } finally {
             setLoading(false);
-            console.log("UsersAD: Kết thúc handleSaveEdit.");
         }
     };
 
-    // --- Logic cho Thêm Người dùng Mới ---
     const handleAddClick = () => {
         setAddFormData({
             email: '',
@@ -202,7 +184,7 @@ const UsersAD = () => {
             isEnabled: true,
             phone: '',
             avatar: '',
-            roleNames: ['READER'], // Mặc định vai trò là 'READER'
+            roleNames: ['READER'],
         });
         setOpenAddDialog(true);
     };
@@ -219,7 +201,6 @@ const UsersAD = () => {
         });
     };
 
-    // Hàm xử lý thay đổi Role cho form thêm mới
     const handleAddRoleChange = (event) => {
         const rolesInput = event.target.value;
         const rolesArray = rolesInput.split(',').map(role => role.trim()).filter(role => role !== '');
@@ -230,19 +211,16 @@ const UsersAD = () => {
     };
 
     const handleSaveAdd = async () => {
-        console.log("UsersAD: Bắt đầu gọi handleSaveAdd...");
         try {
             setLoading(true);
             const payload = { ...addFormData };
 
-            // Backend mong đợi roleNames là Set<String>, frontend gửi mảng cũng được
             if (payload.roleNames && Array.isArray(payload.roleNames)) {
-                payload.roleNames = Array.from(new Set(payload.roleNames)); // Đảm bảo là mảng unique string
+                payload.roleNames = Array.from(new Set(payload.roleNames));
             } else {
-                payload.roleNames = ['READER']; // Mặc định nếu không có vai trò nào được chọn
+                payload.roleNames = ['READER'];
             }
 
-            // Convert dateOfBirth string to Date object
             if (payload.dateOfBirth) {
                 payload.dateOfBirth = new Date(payload.dateOfBirth);
             } else {
@@ -250,11 +228,8 @@ const UsersAD = () => {
             }
 
             const response = await apiClient.post('/admin/users', payload);
-            console.log("UsersAD: Phản hồi từ API POST /admin/users:", response.data);
-
             if (response.data) {
-                // Cập nhật lại danh sách người dùng hoặc tải lại
-                fetchUsers();
+                fetchUsers(page, rowsPerPage);
                 handleCloseAddDialog();
                 alert('Người dùng đã được thêm thành công!');
             } else {
@@ -262,59 +237,59 @@ const UsersAD = () => {
             }
         } catch (err) {
             alert('Không thể thêm người dùng. Lỗi: ' + (err.response?.data?.message || err.message || 'Không rõ'));
-            console.error("UsersAD: Lỗi khi thêm người dùng (catch block):", err);
         } finally {
             setLoading(false);
-            console.log("UsersAD: Kết thúc handleSaveAdd.");
         }
     };
 
-    // --- Logic cho Xóa Người dùng (Soft Delete) ---
     const handleDeleteUser = async (userId) => {
         if (window.confirm(`Bạn có chắc muốn xóa người dùng có ID: ${userId}? (Thực hiện xóa mềm)`)) {
-            console.log("UsersAD: Bắt đầu gọi handleDeleteUser...");
             try {
                 setLoading(true);
                 const response = await apiClient.delete(`/admin/users/${userId}`);
-                console.log("UsersAD: Phản hồi từ API DELETE /admin/users:", response);
 
-                if (response.status === 200 || response.status === 204) { // 200 OK hoặc 204 No Content
-                    // Tải lại danh sách để thấy người dùng đã bị "xóa mềm" (không hiển thị do findAllByIsDeletedFalse)
-                    fetchUsers();
+                if (response.status === 200 || response.status === 204) {
+                    fetchUsers(page, rowsPerPage);
                     alert('Người dùng đã được xóa mềm thành công!');
                 } else {
                     alert('Không thể xóa người dùng. Lỗi: ' + (response.data?.message || 'Không rõ'));
                 }
             } catch (err) {
                 alert('Không thể xóa người dùng. Lỗi: ' + (err.response?.data?.message || err.message || 'Không rõ'));
-                console.error("UsersAD: Lỗi khi xóa người dùng (catch block):", err);
             } finally {
                 setLoading(false);
-                console.log("UsersAD: Kết thúc handleDeleteUser.");
             }
         }
     };
 
-    // Hàm định dạng ngày tháng
     const formatDate = (dateString) => {
         if (!dateString) return '';
         const date = new Date(dateString);
-        if (isNaN(date.getTime())) { // Kiểm tra ngày hợp lệ
-            console.warn("Invalid date string:", dateString);
+        if (isNaN(date.getTime())) {
             return '';
         }
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return date.toLocaleDateString('vi-VN', options); // Định dạng tiếng Việt
+        return date.toLocaleDateString('vi-VN', options);
     };
 
-    // Hàm xử lý khi người dùng thay đổi input tìm kiếm
     const handleSearchInputChange = (event) => {
         setSearchTerm(event.target.value);
     };
 
-    // Hàm xử lý khi nhấn nút tìm kiếm hoặc Enter
     const handleSearchSubmit = () => {
-        fetchUsers(searchTerm); // Gọi lại fetchUsers với searchTerm hiện tại
+        setPage(0); // Reset trang về 0 khi tìm kiếm mới
+        fetchUsers(0, rowsPerPage, searchTerm);
+    };
+
+    // Hàm xử lý thay đổi trang
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    // Hàm xử lý thay đổi số lượng hàng trên mỗi trang
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0); // Reset trang về 0 khi thay đổi số hàng
     };
 
     if (loading) {
@@ -344,7 +319,6 @@ const UsersAD = () => {
                 >
                     Thêm Người dùng
                 </Button>
-                {/* Thanh tìm kiếm */}
                 <TextField
                     label="Tìm kiếm người dùng"
                     variant="outlined"
@@ -429,10 +403,22 @@ const UsersAD = () => {
                             ))}
                         </TableBody>
                     </Table>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={totalElements}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        labelRowsPerPage="Số hàng mỗi trang:"
+                        labelDisplayedRows={({ from, to, count }) =>
+                            `Hiển thị ${from}–${to} trên tổng số ${count}`
+                        }
+                    />
                 </TableContainer>
             )}
 
-            {/* Dialog chỉnh sửa người dùng */}
             <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
                 <DialogTitle>Chỉnh sửa người dùng</DialogTitle>
                 <DialogContent>
@@ -447,7 +433,7 @@ const UsersAD = () => {
                         value={editFormData.email}
                         onChange={handleEditFormChange}
                         sx={{ mb: 2 }}
-                        disabled // Email thường không được phép chỉnh sửa
+                        disabled
                     />
                     <TextField
                         margin="dense"
@@ -486,12 +472,12 @@ const UsersAD = () => {
                         margin="dense"
                         name="dateOfBirth"
                         label="Ngày sinh"
-                        type="date" // Sử dụng type="date"
+                        type="date"
                         fullWidth
                         variant="standard"
                         value={editFormData.dateOfBirth}
                         onChange={handleEditFormChange}
-                        InputLabelProps={{ shrink: true }} // Đảm bảo label không chồng lên giá trị
+                        InputLabelProps={{ shrink: true }}
                         sx={{ mb: 2 }}
                     />
                     <TextField
@@ -527,7 +513,6 @@ const UsersAD = () => {
                         label="Kích hoạt tài khoản"
                         sx={{ mb: 1 }}
                     />
-                    {/* Input cho vai trò: Hiện tại là TextField, bạn có thể thay bằng MultiSelect nếu cần */}
                     <TextField
                         margin="dense"
                         name="roleNames"
@@ -546,7 +531,6 @@ const UsersAD = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Dialog THÊM MỚI người dùng */}
             <Dialog open={openAddDialog} onClose={handleCloseAddDialog}>
                 <DialogTitle>Thêm người dùng mới</DialogTitle>
                 <DialogContent>
@@ -640,7 +624,6 @@ const UsersAD = () => {
                         label="Kích hoạt tài khoản"
                         sx={{ mb: 1 }}
                     />
-                    {/* Input cho vai trò: Sử dụng TextField, có thể là input comma-separated */}
                     <TextField
                         margin="dense"
                         name="roleNames"
