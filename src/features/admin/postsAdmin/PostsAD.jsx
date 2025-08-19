@@ -1,4 +1,3 @@
-// src/components/PostsAD.jsx
 import React, { useEffect, useState } from 'react';
 import {
     Box,
@@ -20,6 +19,7 @@ import {
     DialogActions,
     TextField,
     InputAdornment,
+    Pagination, 
 } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -40,21 +40,29 @@ const PostsAD = () => {
     const [selectedTab, setSelectedTab] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
 
+    const [currentPage, setCurrentPage] = useState(0); 
+    const [totalPages, setTotalPages] = useState(0); 
+    const pageSize = 10; 
+
     const [isPreviewVisible, setIsPreviewVisible] = useState(false);
     const [previewContent, setPreviewContent] = useState('');
     const [previewTitle, setPreviewTitle] = useState('');
 
-    const fetchAllPosts = async (currentSearchTerm = searchTerm) => {
+    const fetchAllPosts = async (currentSearchTerm = searchTerm, page = currentPage) => {
         try {
             setLoadingAll(true);
             setErrorAll(null);
             const response = await apiClient.get('/admin/news', {
                 params: {
                     searchTerm: currentSearchTerm,
+                    page: page,  
+                    size: pageSize 
                 }
             });
+            
             if (response.data && Array.isArray(response.data.content)) {
                 setAllPosts(response.data.content);
+                setTotalPages(response.data.totalPages);
             } else {
                 setErrorAll('Cấu trúc dữ liệu trả về từ backend không hợp lệ cho tất cả bài viết.');
             }
@@ -69,6 +77,7 @@ const PostsAD = () => {
         try {
             setLoadingPending(true);
             setErrorPending(null);
+            
             const response = await apiClient.get('/admin/news/pending'); 
             if (response.data && Array.isArray(response.data.data)) {
                 setPendingPosts(response.data.data);
@@ -82,6 +91,7 @@ const PostsAD = () => {
         }
     };
 
+    
     useEffect(() => {
         fetchAllPosts();
         fetchPendingPosts();
@@ -92,6 +102,7 @@ const PostsAD = () => {
     };
 
     const handleApprovePost = async (postId) => {
+        
         if (window.confirm(`Bạn có chắc muốn duyệt bài viết có ID: ${postId}?`)) {
             try {
                 setLoadingPending(true);
@@ -112,6 +123,7 @@ const PostsAD = () => {
     };
     
     const handleSoftDeletePost = async (postId) => {
+        
         if (window.confirm(`Bạn có chắc muốn xóa bài viết có ID: ${postId}?`)) {
             try {
                 setLoadingPending(true);
@@ -150,7 +162,14 @@ const PostsAD = () => {
     };
 
     const handleSearchSubmit = () => {
-        fetchAllPosts(searchTerm);
+        
+        setCurrentPage(0);
+        fetchAllPosts(searchTerm, 0);
+    };
+
+    const handlePageChange = (event, pageNumber) => {
+        setCurrentPage(pageNumber - 1); 
+        fetchAllPosts(searchTerm, pageNumber - 1); 
     };
 
     if (loadingAll || loadingPending) {
@@ -262,6 +281,17 @@ const PostsAD = () => {
                             </Table>
                         </TableContainer>
                     )}
+                    
+                   
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, mb: 2 }}>
+                        
+                        <Pagination 
+                            count={totalPages} 
+                            page={currentPage + 1} 
+                            onChange={handlePageChange}
+                            color="primary"
+                        />
+                    </Box>
                 </Box>
             )}
 
