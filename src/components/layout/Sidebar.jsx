@@ -62,7 +62,7 @@ const Sidebar = () => {
         </Menu.Item>
 
         <Menu.Item key="hot" icon={<FireOutlined />}>
-          <Link to="/hotnews">Tin nóng</Link>
+          <Link to="/hotnews">Tin mới nhất</Link>
         </Menu.Item>
 
         <Menu.Item key="featured" icon={<StarOutlined />}>

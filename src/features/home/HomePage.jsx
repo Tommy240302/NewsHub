@@ -35,7 +35,10 @@ const HomePage = () => {
             : [];
 
         // Lọc bỏ bài viết đã xóa (is_deleted = 1)
-        const filteredNews = newsArray.filter(item => item.isDeleted === false || item.isDeleted === 0);
+        const filteredNews = newsArray.filter(item => 
+          (item.isDeleted === false || item.isDeleted === 0) && 
+          (item.status === true || item.status === 1)
+        );
 
         // Sắp xếp theo publishedAt giảm dần (tin mới trước)
         const sortedNews = [...filteredNews].sort((a, b) => {
