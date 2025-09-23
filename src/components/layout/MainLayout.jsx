@@ -1,38 +1,43 @@
 import { Layout } from 'antd';
-import Navbar, { NAVBAR_HEIGHT_PX } from './Navbar';
+import Navbar, { NAVBAR_HEIGHT } from './Navbar';
 import Sidebar from './Sidebar';
-import { Outlet } from 'react-router-dom'; 
+import { Outlet } from 'react-router-dom';
 
-const { Content, Sider } = Layout;
+const { Content } = Layout;
 
-const MainLayout = () => { 
+const MainLayout = () => {
   return (
     <>
+      {/* Navbar trên cùng */}
       <Navbar />
 
-      <Layout style={{ paddingTop: NAVBAR_HEIGHT_PX, minHeight: '100vh' }}>
-        <Sider
-          width={200}
+      <Layout
+        style={{
+          paddingTop: NAVBAR_HEIGHT, // đẩy nội dung xuống dưới navbar
+          minHeight: '100vh',
+          background: '#f5f5f5',
+        }}
+      >
+        {/* Sidebar ngang ngay dưới Navbar */}
+        <Sidebar />
+
+        {/* Nội dung chính */}
+        <Content
           style={{
+            margin: '16px auto',
+            padding: 24,
+            minHeight: 280,
+            maxWidth: 1200,
             background: '#fff',
-            borderRight: '1px solid #f0f0f0',
+            borderRadius: 8,
+            boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
           }}
         >
-          <Sidebar />
-        </Sider>
-        <Layout style={{ padding: '24px' }}>
-          <Content
-            style={{
-              background: '#fff',
-              padding: 24,
-              minHeight: 280,
-            }}
-          >
-            <Outlet /> {/* <-- THAY THẾ {children} BẰNG <Outlet /> */}
-          </Content>
-        </Layout>
+          <Outlet />
+        </Content>
       </Layout>
     </>
   );
 };
-export default MainLayout; 
+
+export default MainLayout;
