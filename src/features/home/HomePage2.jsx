@@ -1,25 +1,15 @@
-import { Carousel, Typography, Tag, Row, Col, Spin } from 'antd';
-import { FireOutlined, StarOutlined } from '@ant-design/icons';
-import NewsCard from '../../components/ui/NewsCard';
-import TrendingNews from '../../components/ui/TrendingNews';
-import WeatherWidget from '../../components/ui/WeatherWidget';
-import { NAVBAR_HEIGHT_PX } from '../../components/layout/Navbar';
-import { useEffect, useState } from 'react';
-import { newsAPI } from '../../common/api';
-import './HomePage2.css';
+import React, { useEffect, useState } from "react";
+import { Row, Col, Card, Typography, Spin } from "antd";
+import { newsAPI } from "../../common/api";
 
 const { Title, Text, Paragraph } = Typography;
+
+const safeText = (val) => (typeof val === "string" ? val : "");
+const safeNumber = (val) => (typeof val === "number" ? val : 0);
 
 const HomePage2 = () => {
   const [featuredNews, setFeaturedNews] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const trendingNews = featuredNews.slice(0, 4).map(item => ({
-    id: item.id,
-    title: item.title,
-    time: new Date(item.publishedAt).toLocaleTimeString(),
-    views: item.view ? `${(item.view / 1000).toFixed(1)}K` : '1.2K'
-  }));
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -30,8 +20,20 @@ const HomePage2 = () => {
           : Array.isArray(res.data?.data)
           ? res.data.data
           : [];
-        setFeaturedNews(newsArray);
+
+        const filteredNews = newsArray.filter(
+          (item) =>
+            (item.isDeleted === false || item.isDeleted === 0) &&
+            (item.status === true || item.status === 1)
+        );
+
+        const sortedNews = [...filteredNews].sort(
+          (a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)
+        );
+
+        setFeaturedNews(sortedNews);
       } catch (err) {
+        console.error(err);
         setFeaturedNews([]);
       } finally {
         setLoading(false);
@@ -41,58 +43,98 @@ const HomePage2 = () => {
     fetchNews();
   }, []);
 
+  if (loading) {
+    return (
+      <div style={{ textAlign: "center", padding: 50 }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  const mainNews = featuredNews[0];
+  const sideNews = featuredNews.slice(1, 4);
+  const trendingNews = featuredNews.slice(4, 100); 
+
   return (
-    <div style={{ paddingTop: NAVBAR_HEIGHT_PX }}>
-      {loading ? (
-        <div className="homepage2-loading"><Spin size="large" /></div>
-      ) : (
-        <>
-          <Carousel autoplay dotPosition='bottom' effect='fade' style={{ marginBottom: 24 }}>
-            {featuredNews.map(news => (
-              <div key={news.id}>
-                <div className="carousel-slide" style={{ backgroundImage: `url(${news.image})` }}>
-                  <div style={{ color: 'white' }}>
-                    <Tag color={news.hot ? 'red' : 'blue'} style={{ marginBottom: 8 }}>
-                      {news.hot ? <FireOutlined /> : <StarOutlined />} {news.category}
-                    </Tag>
-                    <Title level={2} style={{ color: 'white', marginBottom: 8 }}>
-                      {news.title}
-                    </Title>
-                    <Paragraph style={{ color: 'white', fontSize: 16, marginBottom: 16 }}>
-                      {news.summary}
-                    </Paragraph>
-                    <Text style={{ color: 'rgba(255,255,255,0.8)' }}>
-                      {news.publishedAt ? new Date(news.publishedAt).toLocaleString() : news.time}
-                    </Text>
-                  </div>
-                </div>
-              </div>
+    <div style={{ padding: "24px" }}>
+      {/* Tin nổi bật + 3 tin nhỏ */}
+      <Row gutter={[16, 16]}>
+        <Col xs={16} lg={16}>
+          {mainNews && (
+            <Card
+              hoverable
+              cover={
+                <img
+                  alt={safeText(mainNews.title)}
+                  src={safeText(mainNews.image) || "/path/to/default.jpg"}
+                  style={{ width: "100%", maxHeight: 400, objectFit: "cover" }}
+                />
+              }
+            >
+              <Text type="secondary">{safeText(mainNews.category)}</Text>
+              <Title level={4}>{safeText(mainNews.title)}</Title>
+              <Paragraph>{safeText(mainNews.summary)}</Paragraph>
+            </Card>
+          )}
+        </Col>
+
+        <Col xs={24} lg={8}>
+          <Row gutter={[16, 16]}>
+            {sideNews.map((item, idx) => (
+              <Col span={24} key={item.id || idx}>
+                <Card hoverable>
+                  <Row gutter={8} align="middle">
+                    <Col span={10}>
+                      <img
+                        alt={safeText(item.title)}
+                        src={safeText(item.image) || "/path/to/default.jpg"}
+                        style={{
+                          width: "100%",
+                          height: "120px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Col>
+                    <Col span={14}>
+                      <Text strong>{safeText(item.title)}</Text>
+                      <br />
+                      <Text type="secondary">{safeText(item.summary)} </Text>
+                    </Col>
+                  </Row>
+                </Card>
+              </Col>
             ))}
-          </Carousel>
-
-          <Row gutter={24}>
-            <Col xs={24} lg={16}>
-              <Title level={3} style={{ marginBottom: 16 }}>
-                <FireOutlined style={{ color: '#ff4d4f' }} /> Tin tức mới nhất
-              </Title>
-              <Row gutter={[16, 16]}>
-                {featuredNews.map(news => (
-                  <Col xs={24} md={12} key={news.id}>
-                    <NewsCard news={news} />
-                  </Col>
-                ))}
-              </Row>
-            </Col>
-
-            <Col xs={24} lg={8}>
-              <div style={{ position: 'sticky', top: 100 }}>
-                <TrendingNews trendingNews={trendingNews} />
-                <WeatherWidget />
-              </div>
-            </Col>
           </Row>
-        </>
-      )}
+        </Col>
+      </Row>
+
+      {/* Trending News */}
+      <div style={{ marginTop: 32 }}>
+        <Title level={4}>Trending News</Title>
+        <Row gutter={[24, 24]}>
+          {trendingNews.map((item, idx) => (
+            <Col xs={24} md={8} key={item.id || idx}>
+              <Card
+                hoverable
+                cover={
+                  <img
+                    alt={safeText(item.title)}
+                    src={safeText(item.image) || "/path/to/default.jpg"}
+                    style={{ width: "100%", height: 200, objectFit: "cover" }}
+                  />
+                }
+              >
+                <Title level={5}>{safeText(item.title)}</Title>
+                <Text type="secondary">{safeText(item.summary)}</Text>
+                <Paragraph ellipsis={{ rows: 2 }}>
+                  {safeText(item.description)}
+                </Paragraph>
+
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </div>
     </div>
   );
 };

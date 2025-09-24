@@ -1,4 +1,4 @@
-import { Layout, Typography, Space, Button, Input, Dropdown, AutoComplete } from 'antd';
+import { Layout, Typography, Space, Button, Input, Dropdown, AutoComplete, Menu } from 'antd';
 import {
   GlobalOutlined,
   SearchOutlined,
@@ -9,10 +9,15 @@ import {
   BoldOutlined,
   PullRequestOutlined,
   LogoutOutlined,
+  StarOutlined,
+  FireOutlined,
+  HomeOutlined,
+  JavaScriptOutlined,
 } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { newsAPI } from '../../common/api';
+import { set } from 'lodash';
 
 const { Header } = Layout;
 const { Title } = Typography;
@@ -23,6 +28,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [news, setNews] = useState([]);
   const [options, setOptions] = useState([]);
+  const [dateTime, setDateTime] = useState(new Date());
 
   // Lấy danh sách bài báo
   useEffect(() => {
@@ -31,7 +37,9 @@ const Navbar = () => {
       setNews(newsArray);
     });
   }, []);
-
+  const interval = setInterval(() => {
+    setDateTime(new Date());
+  }, 60000);
   // Xử lý tìm kiếm
   const handleSearch = (value) => {
     if (!value) {
@@ -53,6 +61,7 @@ const Navbar = () => {
     navigate(`/news/${id}`);
   };
 
+  // Menu người dùng
   const userMenuItems = [
     {
       key: 'info',
@@ -116,8 +125,8 @@ const Navbar = () => {
   return (
     <Header
       style={{
-        background: '#fff',
-        padding: '0 24px',
+        background: '#1B3C53',
+        padding: '0 170px',
         position: 'fixed',
         top: 0,
         left: 0,
@@ -127,26 +136,56 @@ const Navbar = () => {
         display: 'flex',
         alignItems: 'center',
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        borderBottom: '1px solid #1B3C53',
       }}
     >
-      <div
+      {/* Logo */}
+      <Link to="/home" style={{ textDecoration: 'none', marginRight: 32 }}>
+        <Title level={3} style={{ margin: 0, color: '#fff', cursor: 'pointer' }}>
+          <JavaScriptOutlined /> NewsHub
+        </Title>
+      </Link>
+
+      {/* Menu chính */}
+      <Menu
+        mode="horizontal"
+        selectable={false}
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          width: '100%',
+          flex: 1,
+          borderBottom: 'none',
+          fontSize: 15,
+          justifyContent: 'center',
+          background: 'transparent',
         }}
       >
-        {/* Logo */}
-        <Link to="/home" style={{ textDecoration: 'none' }}>
-          <Title level={3} style={{ margin: 0, color: '#1890ff', cursor: 'pointer' }}>
-            <GlobalOutlined /> NewsHub
-          </Title>
-        </Link>
 
-        {/* Search */}
+        <div style={{ fontSize: 14, color: '#fff', minWidth: '200px', textAlign: 'right' }}>
+          <div>
+            {dateTime.toLocaleDateString('vi-VN', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </div>
+        </div>
+
+        <Menu.Item style={
+          { color: '#fff' }
+        } key="hot" icon={<FireOutlined />}>
+          <Link to="/hotnews">Tin mới nhất</Link>
+        </Menu.Item>
+        <Menu.Item style={
+          { color: '#fff' }
+        } key="featured" icon={<StarOutlined />}>
+          <Link to="/trendnews">Tin nổi bật</Link>
+        </Menu.Item>
+      </Menu>
+
+      {/* Search + Icons */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
         <AutoComplete
-          style={{ width: 400 }}
+          style={{ width: 280 }}
           options={options}
           onSearch={handleSearch}
           onSelect={onSelect}
@@ -155,11 +194,14 @@ const Navbar = () => {
           <Input suffix={<SearchOutlined />} />
         </AutoComplete>
 
-        {/* Icons */}
         <Space>
-          <Button type="text" icon={<BellOutlined />} />
+          <Button style={
+            { color: '#fff' }
+          } type="text" icon={<BellOutlined />} />
           <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" trigger={['click']}>
-            <Button type="text" icon={<UserOutlined />} />
+            <Button style={
+              { color: '#fff' }
+            } type="text" icon={<UserOutlined />} />
           </Dropdown>
         </Space>
       </div>

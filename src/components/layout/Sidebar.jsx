@@ -30,9 +30,15 @@ const Sidebar = () => {
   return (
     <div
       style={{
-        background: '#fff',
-        borderBottom: '1px solid #f0f0f0',
+        background: '#234C6A',
+        borderBottom: '1px solid #1B3C53',
         padding: '0 40px',
+        top: 64,
+        right: 0,
+        left: 0,
+        position: 'fixed',
+        zIndex: 1000,
+        width: '100%',
       }}
     >
       <Menu
@@ -41,20 +47,13 @@ const Sidebar = () => {
         style={{
           borderBottom: 'none',
           justifyContent: 'center',
-          flexWrap: 'wrap',
+          fontWeight: '400',
+          fontSize: '16px',
+          gap: '24px',
+          cursor: 'pointer',
+          background: 'transparent',
         }}
       >
-        <Menu.Item key="home" icon={<HomeOutlined />}>
-          <Link to="/home">Trang chủ</Link>
-        </Menu.Item>
-
-        <Menu.Item key="hot" icon={<FireOutlined />}>
-          <Link to="/hotnews">Tin mới nhất</Link>
-        </Menu.Item>
-
-        <Menu.Item key="featured" icon={<StarOutlined />}>
-          <Link to="/trendnews">Tin nổi bật</Link>
-        </Menu.Item>
 
         {loading ? (
           <Menu.Item key="loading" disabled>
@@ -62,7 +61,9 @@ const Sidebar = () => {
           </Menu.Item>
         ) : categories.length > 0 ? (
           categories.map((cat) => (
-            <Menu.Item key={cat.id}>
+            <Menu.Item style={
+              { color: '#fff' }
+            } key={cat.id}>
               <Link to={`/chuyen-muc/${cat.id}`}>{cat.content}</Link>
             </Menu.Item>
           ))
