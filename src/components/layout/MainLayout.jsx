@@ -24,11 +24,11 @@ const MainLayout = () => {
         {/* Nội dung chính */}
         <Content
           style={{
-            margin: '16px auto',
-            padding: 24,
+            margin: ' auto',
+            padding: '120px',
             minHeight: 280,
-            maxWidth: 1200,
-            background: '#fff',
+            maxWidth: '100%',
+            background: 'transparent',
             borderRadius: 8,
             boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
           }}

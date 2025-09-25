@@ -1,40 +1,37 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Typography, Spin } from "antd";
 import { newsAPI } from "../../common/api";
-
-const { Title, Text, Paragraph } = Typography;
 
 const safeText = (val) => (typeof val === "string" ? val : "");
 const safeNumber = (val) => (typeof val === "number" ? val : 0);
 
 const HomePage2 = () => {
-  const [featuredNews, setFeaturedNews] = useState([]);
+  const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchNews = async () => {
       try {
         const res = await newsAPI.getAllNews();
-        const newsArray = Array.isArray(res.data)
+        const rawData = Array.isArray(res.data)
           ? res.data
           : Array.isArray(res.data?.data)
           ? res.data.data
           : [];
 
-        const filteredNews = newsArray.filter(
+        const filtered = rawData.filter(
           (item) =>
             (item.isDeleted === false || item.isDeleted === 0) &&
             (item.status === true || item.status === 1)
         );
 
-        const sortedNews = [...filteredNews].sort(
+        const sorted = [...filtered].sort(
           (a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)
         );
 
-        setFeaturedNews(sortedNews);
+        setNews(sorted);
       } catch (err) {
-        console.error(err);
-        setFeaturedNews([]);
+        console.error("Fetch news failed:", err);
+        setNews([]);
       } finally {
         setLoading(false);
       }
@@ -45,95 +42,102 @@ const HomePage2 = () => {
 
   if (loading) {
     return (
-      <div style={{ textAlign: "center", padding: 50 }}>
-        <Spin size="large" />
+      <div className="flex justify-center items-center py-20">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
       </div>
     );
   }
 
-  const mainNews = featuredNews[0];
-  const sideNews = featuredNews.slice(1, 4);
-  const trendingNews = featuredNews.slice(4, 100); 
+  const mainNews = news[0];
+  const sideNews = news.slice(1, 4);
+  const trendingNews = news.slice(4);
 
   return (
-    <div style={{ padding: "24px" }}>
-      {/* Tin nổi bật + 3 tin nhỏ */}
-      <Row gutter={[16, 16]}>
-        <Col xs={16} lg={16}>
-          {mainNews && (
-            <Card
-              hoverable
-              cover={
-                <img
-                  alt={safeText(mainNews.title)}
-                  src={safeText(mainNews.image) || "/path/to/default.jpg"}
-                  style={{ width: "100%", maxHeight: 400, objectFit: "cover" }}
-                />
-              }
-            >
-              <Text type="secondary">{safeText(mainNews.category)}</Text>
-              <Title level={4}>{safeText(mainNews.title)}</Title>
-              <Paragraph>{safeText(mainNews.summary)}</Paragraph>
-            </Card>
-          )}
-        </Col>
+    <div className="px-4 py-8 max-w-7xl mx-auto">
+      {/* Featured Section */}
+      <div className="grid grid-cols-12 gap-6 items-stretch">
+        {/* Main News */}
+        <div className="col-span-8">
+          <div className="bg-white rounded-lg overflow-hidden shadow h-full">
+            <img
+              src={safeText(mainNews.image) || "/path/to/default.jpg"}
+              alt={safeText(mainNews.title)}
+              className="w-[770px] h-[400px] object-cover rounded-lg"
+            />
+            <div className="p-4 w-[90%]">
+              <h2 className="text-2xl font-bold mb-2">{safeText(mainNews.title)}</h2>
+              <p className="text-gray-600">{safeText(mainNews.summary)}</p>
+            </div>
+          </div>
+        </div>
 
-        <Col xs={24} lg={8}>
-          <Row gutter={[16, 16]}>
-            {sideNews.map((item, idx) => (
-              <Col span={24} key={item.id || idx}>
-                <Card hoverable>
-                  <Row gutter={8} align="middle">
-                    <Col span={10}>
-                      <img
-                        alt={safeText(item.title)}
-                        src={safeText(item.image) || "/path/to/default.jpg"}
-                        style={{
-                          width: "100%",
-                          height: "120px",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </Col>
-                    <Col span={14}>
-                      <Text strong>{safeText(item.title)}</Text>
-                      <br />
-                      <Text type="secondary">{safeText(item.summary)} </Text>
-                    </Col>
-                  </Row>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </Col>
-      </Row>
+        {/* Side News */}
+        <div className="col-span-4 flex flex-col gap-4 h-full">
+          {sideNews.map((item, idx) => (
+            <div
+              key={item.id || idx}
+              className="flex gap-3 bg-white rounded-lg overflow-hidden shadow p-2 flex-1"
+            >
+              <img
+                src={safeText(item.image) || "/path/to/default.jpg"}
+                alt={safeText(item.title)}
+                className="flex-shrink-0 rounded-lg object-cover"
+                style={{ width: "150px", height: "140px" }}
+              />
+              <div className="p-2 flex flex-col">
+                <h3
+                  className="h-[50px] font-semibold text-sm line-clamp-2"
+                  style={{ paddingLeft: "10px" }}
+                >
+                  {safeText(item.title)}
+                </h3>
+                <p
+                  className="text-gray-500 text-xs mt-1 line-clamp-3"
+                  style={{ paddingLeft: "10px" }}
+                >
+                  {safeText(item.summary)}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Trending News */}
-      <div style={{ marginTop: 32 }}>
-        <Title level={4}>Trending News</Title>
-        <Row gutter={[24, 24]}>
-          {trendingNews.map((item, idx) => (
-            <Col xs={24} md={8} key={item.id || idx}>
-              <Card
-                hoverable
-                cover={
-                  <img
-                    alt={safeText(item.title)}
-                    src={safeText(item.image) || "/path/to/default.jpg"}
-                    style={{ width: "100%", height: 200, objectFit: "cover" }}
-                  />
-                }
+      <div className="mt-10">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">Trending News</h2>
+          <button className="text-blue-600 hover:underline text-sm font-medium">
+            See More →
+          </button>
+        </div>
+        <div className="max-w-7xl">
+          <div className="grid grid-cols-3">
+            {trendingNews.map((item, idx) => (
+              <div
+                key={item.id || idx}
+                className="bg-white rounded-xl shadow hover:shadow-lg flex flex-col overflow-hidden"
               >
-                <Title level={5}>{safeText(item.title)}</Title>
-                <Text type="secondary">{safeText(item.summary)}</Text>
-                <Paragraph ellipsis={{ rows: 2 }}>
-                  {safeText(item.description)}
-                </Paragraph>
-
-              </Card>
-            </Col>
-          ))}
-        </Row>
+                <img
+                  src={safeText(item.image) || "/path/to/default.jpg"}
+                  alt={safeText(item.title)}
+                  className="w-[390px] h-[200px] object-cover rounded-lg"
+                />
+                <div className="p-4 w-[390px]">
+                  <h3 className="text-lg font-semibold line-clamp-2">
+                    {safeText(item.title)}
+                  </h3>
+                  <p className="text-gray-500 text-sm mt-2 line-clamp-2">
+                    {safeText(item.summary)}
+                  </p>
+                  <p className="text-gray-600 text-sm mt-2 line-clamp-2">
+                    {safeText(item.description)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

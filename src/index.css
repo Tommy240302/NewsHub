@@ -27,3 +27,7 @@ body {
 .login-form-button {
   width: 100%;
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
