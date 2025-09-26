@@ -15,7 +15,7 @@ const MainLayout = () => {
         style={{
           paddingTop: NAVBAR_HEIGHT, // đẩy nội dung xuống dưới navbar
           minHeight: '100vh',
-          background: '#f5f5f5',
+          background: '#fff',
         }}
       >
         {/* Sidebar ngang ngay dưới Navbar */}

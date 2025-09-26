@@ -125,7 +125,7 @@ const Navbar = () => {
   return (
     <Header
       style={{
-        background: '#1B3C53',
+        background: '#4A102A',
         padding: '0 170px',
         position: 'fixed',
         top: 0,

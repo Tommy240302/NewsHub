@@ -30,7 +30,7 @@ const Sidebar = () => {
   return (
     <div
       style={{
-        background: '#234C6A',
+        background: '#85193C',
         borderBottom: '1px solid #1B3C53',
         padding: '0 40px',
         top: 64,
