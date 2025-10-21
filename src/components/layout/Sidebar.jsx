@@ -3,6 +3,7 @@ import { Menu, Spin } from 'antd';
 import { Link } from 'react-router-dom';
 import { HomeOutlined, FireOutlined, StarOutlined } from '@ant-design/icons';
 import { categoryAPI } from '../../common/api';
+import './Sidebar.css';
 
 const Sidebar = () => {
   const [categories, setCategories] = useState([]);
@@ -30,9 +31,8 @@ const Sidebar = () => {
   return (
     <div
       style={{
-        background: '#85193C',
+        background: '#234C6A',
         borderBottom: '1px solid #1B3C53',
-        padding: '0 40px',
         top: 64,
         right: 0,
         left: 0,
@@ -41,15 +41,17 @@ const Sidebar = () => {
         width: '100%',
       }}
     >
+    <div style={{padding: '0 120px', boxSizing: 'border-box', overflow: 'hidden', }}>
       <Menu
         mode="horizontal"
         defaultSelectedKeys={['home']}
         style={{
           borderBottom: 'none',
-          justifyContent: 'center',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
           fontWeight: '400',
           fontSize: '16px',
-          gap: '24px',
           cursor: 'pointer',
           background: 'transparent',
         }}
@@ -73,6 +75,7 @@ const Sidebar = () => {
           </Menu.Item>
         )}
       </Menu>
+      </div>
     </div>
   );
 };

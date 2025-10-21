@@ -18,6 +18,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { newsAPI } from '../../common/api';
 import { set } from 'lodash';
+import './Navbar.css';
 
 const { Header } = Layout;
 const { Title } = Typography;
@@ -108,10 +109,15 @@ const Navbar = () => {
       ),
       onClick: () => navigate('/request-author'),
     },
+
+    {
+      type: 'divider',
+    },
+
     {
       key: 'logout',
       label: (
-        <span>
+        <span style={{ color: 'red', fontStyle: 'bold' }}>
           <LogoutOutlined /> Đăng xuất
         </span>
       ),
@@ -125,8 +131,8 @@ const Navbar = () => {
   return (
     <Header
       style={{
-        background: '#4A102A',
-        padding: '0 170px',
+        background: '#1B3C53',
+        padding: '0 120px',
         position: 'fixed',
         top: 0,
         left: 0,
@@ -195,15 +201,28 @@ const Navbar = () => {
         </AutoComplete>
 
         <Space>
-          <Button style={
-            { color: '#fff' }
-          } type="text" icon={<BellOutlined />} />
-          <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" trigger={['click']}>
-            <Button style={
-              { color: '#fff' }
-            } type="text" icon={<UserOutlined />} />
+          <Dropdown
+            menu={{ items: userMenuItems }}
+            placement="bottomRight"
+            trigger={['click']}
+            overlayClassName="custom-dropdown"
+          >
+            <Button
+              type="text"
+              icon={<UserOutlined />}
+              style={{
+                color: '#fff',
+                fontSize: '18px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(255,255,255,0.1)',
+                width: '40px',
+                height: '40px',
+              }}
+            />
           </Dropdown>
+
         </Space>
+
       </div>
     </Header>
   );

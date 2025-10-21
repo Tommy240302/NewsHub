@@ -58,7 +58,7 @@ const HomePage2 = () => {
   return (
     <div className="px-4 py-8 max-w-7xl mx-auto">
       {/* Featured Section */}
-      <div className="grid grid-cols-12 gap-6 items-stretch">
+      <div className="grid grid-cols-12 items-stretch">
         {/* Main News */}
         <div className="col-span-8">
           <div className="bg-white rounded-lg overflow-hidden shadow h-full">
@@ -66,17 +66,17 @@ const HomePage2 = () => {
               src={safeText(mainNews.image) || "/path/to/default.jpg"}
               alt={safeText(mainNews.title)}
               className="w-[770px] h-[400px] object-cover rounded-lg"
-              style={{ borderRadius: "12px" }}
+              style={{ borderRadius: "15px" }}
             />
-            <div className="p-4 w-[90%]">
-              <h2 className="text-2xl font-bold mb-2">{safeText(mainNews.title)}</h2>
+            <div className="p-4 w-[770px] text-justify">
+              <h2 className="text-1xl font-bold mb-2">{safeText(mainNews.title)}</h2>
               <p className="text-gray-600">{safeText(mainNews.summary)}</p>
             </div>
           </div>
         </div>
 
         {/* Side News */}
-        <div className="col-span-4 flex flex-col gap-4 h-full">
+        <div className="col-span-4 flex flex-col gap-[20px] h-[400px]">
           {sideNews.map((item, idx) => (
             <div
               key={item.id || idx}
@@ -85,19 +85,19 @@ const HomePage2 = () => {
               <img
                 src={safeText(item.image) || "/path/to/default.jpg"}
                 alt={safeText(item.title)}
-                className="flex-shrink-0 rounded-lg object-cover"
-                style={{ width: "150px", height: "140px", borderRadius: "8px" }}
+                className="flex-shrink-0 rounded-lg object-cover h-[100%]"
+                style={{ width: "170px", borderRadius: "15px" }}
               />
-              <div className="p-2 flex flex-col">
+              <div className="p-2 flex flex-col text-justify">
                 <h3
                   className="h-[50px] font-semibold text-sm line-clamp-2"
-                  style={{ paddingLeft: "10px" }}
+                  style={{ paddingLeft: "15px" }}
                 >
                   {safeText(item.title)}
                 </h3>
                 <p
-                  className="text-gray-500 text-xs mt-1 line-clamp-3"
-                  style={{ paddingLeft: "10px" }}
+                  className="text-gray-500 text-xs mt-1 line-clamp-3 h-[80px]"
+                  style={{ paddingLeft: "15px" }}
                 >
                   {safeText(item.summary)}
                 </p>
@@ -131,8 +131,8 @@ const HomePage2 = () => {
                   className="h-[200px] object-cover rounded-lg"
                   style={{ borderRadius: "12px" }}
                 />
-                <div className="p-4">
-                  <h3 className="h-[40px] text-lg font-semibold line-clamp-2">
+                <div className="p-4 text-justify">
+                  <h3 className="h-[50px] text-lg font-semibold line-clamp-2">
                     {safeText(item.title)}
                   </h3>
                   <p className="h-[60px] text-gray-500 text-sm mt-2 line-clamp-2"
@@ -152,7 +152,7 @@ const HomePage2 = () => {
       <div className="bg-gradient-to-r rounded-2xl p-10 mb-10 relative overflow-hidden"
         style={{
           backgroundColor: "#19183B",
-          height: "250px", borderRadius: "8px", marginTop: "30px"
+          height: "250px", borderRadius: "15px", marginTop: "30px"
         }}>
         <h1 className=" text-white"
           style={{
@@ -206,8 +206,8 @@ const HomePage2 = () => {
                   className="h-[200px] object-cover rounded-lg"
                   style={{ borderRadius: "12px" }}
                 />
-                <div className="p-4">
-                  <h3 className="h-[40px] text-lg font-semibold line-clamp-2">
+                <div className="p-4 text-justify">
+                  <h3 className="h-[50px] text-lg font-semibold line-clamp-2">
                     {safeText(item.title)}
                   </h3>
                   <p className="h-[60px] text-gray-500 text-sm mt-2 line-clamp-2"
@@ -247,8 +247,8 @@ const HomePage2 = () => {
                   className="h-[200px] object-cover rounded-lg"
                   style={{ borderRadius: "12px" }}
                 />  
-                <div className="p-4">
-                  <h3 className="h-[40px] text-lg font-semibold line-clamp-2">
+                <div className="p-4 text-justify">
+                  <h3 className="h-[50px] text-lg font-semibold line-clamp-2">
                     {safeText(item.title)}
                   </h3>
                   <p className="h-[60px] text-gray-500 text-sm mt-2 line-clamp-2"
