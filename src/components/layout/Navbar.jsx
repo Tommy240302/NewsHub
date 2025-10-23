@@ -13,12 +13,16 @@ import {
   FireOutlined,
   HomeOutlined,
   JavaScriptOutlined,
+  DownOutlined,
 } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { newsAPI } from '../../common/api';
 import { set } from 'lodash';
 import './Navbar.css';
+import { jwtDecode } from 'jwt-decode';
+import { useMemo } from 'react'; 
+import { colors } from '@mui/material';
 
 const { Header } = Layout;
 const { Title } = Typography;
@@ -30,6 +34,22 @@ const Navbar = () => {
   const [news, setNews] = useState([]);
   const [options, setOptions] = useState([]);
   const [dateTime, setDateTime] = useState(new Date());
+  const [roles, setRoles] = useState([]);
+  const isLoggedIn = Boolean(localStorage.getItem('token'));
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        console.log('Decoded token:', decoded);
+        setRoles(decoded.roles || []);
+        console.log('User roles:', decoded.roles);
+      } catch (error) {
+        console.error('Lỗi giải mã token:', error);
+      } 
+    }
+  }, []);
 
   // Lấy danh sách bài báo
   useEffect(() => {
@@ -63,7 +83,10 @@ const Navbar = () => {
   };
 
   // Menu người dùng
-  const userMenuItems = [
+ const userMenuItems = useMemo(() => {
+  console.log("Rendering menu, roles:", roles); // xem roles mỗi lần render
+
+  const items = [
     {
       key: 'info',
       label: (
@@ -73,7 +96,11 @@ const Navbar = () => {
       ),
       onClick: () => navigate('/userprofile'),
     },
-    {
+  ];
+
+  // Chỉ thêm khi có role AUTHOR
+  if (Array.isArray(roles) && roles.includes('ROLE_AUTHOR')) {
+    items.push({
       key: 'create',
       label: (
         <span>
@@ -81,16 +108,35 @@ const Navbar = () => {
         </span>
       ),
       onClick: () => navigate('/createnews'),
-    },
-    {
-      key: 'login',
-      label: (
+    });
+  }
+  // CHỉ thêm khi không có role AUTHOR
+  if (isLoggedIn && Array.isArray(roles) && !roles.includes('ROLE_AUTHOR')) {
+    items.push({
+      key: 'request',
+      label: (  
         <span>
-          <LoginOutlined /> Đăng nhập
+          <PullRequestOutlined /> Yêu cầu tác giả
         </span>
       ),
-      onClick: () => navigate('/login'),
-    },
+      onClick: () => navigate('/request-author'),
+    });
+  }
+
+  if (!isLoggedIn) {
+    items.push(
+      {
+        key: 'login',
+        label: (
+          <span>
+            <LoginOutlined /> Đăng nhập
+          </span>
+        ),
+        onClick: () => navigate('/login'),
+      }
+    );
+  }
+  items.push(
     {
       key: 'register',
       label: (
@@ -100,33 +146,29 @@ const Navbar = () => {
       ),
       onClick: () => navigate('/signup'),
     },
-    {
-      key: 'request-author',
-      label: (
-        <span>
-          <PullRequestOutlined /> Yêu cầu làm tác giả
-        </span>
-      ),
-      onClick: () => navigate('/request-author'),
-    },
-
+    
     {
       type: 'divider',
     },
-
-    {
+  );
+  if (isLoggedIn) {
+    items.push({
       key: 'logout',
       label: (
-        <span style={{ color: 'red', fontStyle: 'bold' }}>
+        <span style={{color: '#DB4437', fontWeight: '500', fontSize: '16px', fontStyle: 'bold'}}>
           <LogoutOutlined /> Đăng xuất
         </span>
       ),
       onClick: () => {
-        localStorage.clear();
-        navigate('/login');
-      },
-    },
-  ];
+        localStorage.removeItem('token');
+        navigate('/home');
+        window.location.reload(); // reload lại trang để cập nhật trạng thái đăng nhập
+      }
+    });
+  }
+
+  return items;
+}, [roles]);
 
   return (
     <Header
@@ -209,7 +251,7 @@ const Navbar = () => {
           >
             <Button
               type="text"
-              icon={<UserOutlined />}
+              icon={isLoggedIn ? <UserOutlined /> : <DownOutlined />}
               style={{
                 color: '#fff',
                 fontSize: '18px',
