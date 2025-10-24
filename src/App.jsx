@@ -14,6 +14,7 @@ import CategoryPage from "./features/pages/CategoryPage";
 
 import Login from "./features/auth/Login";
 import SignUp from "./features/auth/SignUp";
+import ChangePassword from "./features/auth/ChangePassword";
 import HotNews from "./features/pages/HotNews";
 import TrendNews from "./features/pages/TrendNews";
 import UserProfile from "./features/auth/UserProfile";
@@ -45,6 +46,7 @@ function App() {
         <Route path="contact" element={<ContactPage />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<SignUp />} />
+        <Route path="changepassword" element={<ChangePassword />} />
         <Route path="hotnews" element={<HotNews />} />
         <Route path="trendnews" element={<TrendNews />} />
         

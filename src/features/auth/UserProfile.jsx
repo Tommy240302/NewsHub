@@ -69,7 +69,7 @@ const UserProfile = () => {
                     <li className="active" onClick={() => navigate('/userprofile')}>
                         <UserOutlined /> Thông tin tài khoản
                     </li>
-                    <li onClick={() => navigate('')}>
+                    <li onClick={() => navigate('/changepassword')}>
                         <LockOutlined /> Đổi mật khẩu
                     </li>
                     <li onClick={() => navigate('')}>

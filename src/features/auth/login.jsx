@@ -51,12 +51,17 @@ const Login = () => {
     if (status === SUCCESS_STATUS) {
       const token = data?.token;// lay ra dk token 
       const id = data?.user.id;
+      const email = data?.user.email;
       if (token) {
         localStorage.setItem("token", token); //Lưu token vào localStorage
 
       }
       if (id) {
         localStorage.setItem("id", id);
+      }
+
+      if (email) {
+        localStorage.setItem("email", email);
       }
 
       alert("Đăng nhập thành công");
@@ -67,7 +72,7 @@ const Login = () => {
 
     }
     else if (status === FAIL_STATUS) {
-      alert(errorMessage);
+      alert("Đăng nhập thất bại");
 
     }
     console.log(response);
