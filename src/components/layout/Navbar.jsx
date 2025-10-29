@@ -173,7 +173,7 @@ const Navbar = () => {
   return (
     <Header
       style={{
-        background: '#1B3C53',
+        background: '#fff',
         padding: '0 120px',
         position: 'fixed',
         top: 0,
@@ -184,12 +184,13 @@ const Navbar = () => {
         display: 'flex',
         alignItems: 'center',
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-        borderBottom: '1px solid #1B3C53',
+        borderBottom: '1px solid #F2F2F2',
       }}
     >
       {/* Logo */}
-      <Link to="/home" style={{ textDecoration: 'none', marginRight: 32 }}>
-        <Title level={3} style={{ margin: 0, color: '#fff', cursor: 'pointer' }}>
+      <Link to="/home2" style={{ textDecoration: 'none', marginRight: 32, borderRight: '1px solid #222',
+         display: 'flex', alignItems: 'center', paddingRight: 24 }}>
+        <Title level={3} style={{ margin: 0, color: '#0F4C75', cursor: 'pointer', fontSize: 30, fontWeight: 'bold' }}>
           <JavaScriptOutlined /> NewsHub
         </Title>
       </Link>
@@ -207,7 +208,7 @@ const Navbar = () => {
         }}
       >
 
-        <div style={{ fontSize: 14, color: '#fff', minWidth: '200px', textAlign: 'right' }}>
+        <div style={{ fontSize: 14, color: '#0C2B4E', minWidth: '200px', textAlign: 'right' }}>
           <div>
             {dateTime.toLocaleDateString('vi-VN', {
               weekday: 'long',
@@ -219,12 +220,12 @@ const Navbar = () => {
         </div>
 
         <Menu.Item style={
-          { color: '#fff' }
+          { color: '#0C2B4E' }
         } key="hot" icon={<FireOutlined />}>
           <Link to="/hotnews">Tin mới nhất</Link>
         </Menu.Item>
         <Menu.Item style={
-          { color: '#fff' }
+          { color: '#0C2B4E' }
         } key="featured" icon={<StarOutlined />}>
           <Link to="/trendnews">Tin nổi bật</Link>
         </Menu.Item>
@@ -253,7 +254,7 @@ const Navbar = () => {
               type="text"
               icon={isLoggedIn ? <UserOutlined /> : <DownOutlined />}
               style={{
-                color: '#fff',
+                color: '#222',
                 fontSize: '18px',
                 borderRadius: '50%',
                 backgroundColor: 'rgba(255,255,255,0.1)',

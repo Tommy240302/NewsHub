@@ -31,8 +31,8 @@ const Sidebar = () => {
   return (
     <div
       style={{
-        background: '#234C6A',
-        borderBottom: '1px solid #1B3C53',
+        background: '#FBFBFB',
+        borderBottom: '1px solid #F2F2F2',
         top: 64,
         right: 0,
         left: 0,
@@ -51,7 +51,7 @@ const Sidebar = () => {
           alignItems: 'center',
           justifyContent: 'space-between',
           fontWeight: '400',
-          fontSize: '16px',
+          fontSize: '13px',
           cursor: 'pointer',
           background: 'transparent',
         }}
@@ -64,7 +64,7 @@ const Sidebar = () => {
         ) : categories.length > 0 ? (
           categories.map((cat) => (
             <Menu.Item style={
-              { color: '#fff' }
+              { color: '#222831' }
             } key={cat.id}>
               <Link to={`/chuyen-muc/${cat.id}`}>{cat.content}</Link>
             </Menu.Item>
