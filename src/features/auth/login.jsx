@@ -65,7 +65,7 @@ const Login = () => {
       }
 
       alert("Đăng nhập thành công");
-      navigate("/home");
+      navigate("/home2");
 
 
 

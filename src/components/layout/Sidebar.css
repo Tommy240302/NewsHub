@@ -38,3 +38,27 @@
   content: '' !important;
   display: none !important;
 }
+
+/* Cho phép tiêu đề SubMenu tự giãn theo text */
+.ant-menu-submenu-title span {
+  display: inline-block !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px; /* tăng lên nếu muốn rộng hơn */
+  vertical-align: middle;
+}
+
+/* Cho phép SubMenu hiển thị rộng theo nội dung */
+.ant-menu-horizontal > .ant-menu-submenu {
+  flex: 0 0 auto !important; /* không bị flex bó lại */
+}
+
+.ant-menu-submenu-title {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px !important; /* giãn cách 2 bên cho đẹp */
+  white-space: nowrap !important; /* không xuống dòng */
+}
+

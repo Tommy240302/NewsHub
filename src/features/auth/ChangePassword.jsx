@@ -55,7 +55,7 @@ const ChangePassword = () => {
 
       if (res.status === SUCCESS_STATUS) {
         alert('Đổi mật khẩu thành công!');
-        navigate('/home');
+        navigate('/home2');
       } else {
         alert(res.errorMessage || 'Đổi mật khẩu thất bại!');
       }
@@ -136,7 +136,7 @@ const ChangePassword = () => {
           <div className="signup-footer">
             <p>
               Quay lại{' '}
-              <Link to="/home" className="register-link">
+              <Link to="/home2" className="register-link">
                 Trang chủ
               </Link>
             </p>

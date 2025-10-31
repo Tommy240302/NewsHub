@@ -69,7 +69,7 @@ const Signup = () => {
         localStorage.setItem('token', loginRes.data.token);
         localStorage.setItem('id', loginRes.data.user.id);
         alert('Đăng ký và đăng nhập thành công!');
-        navigate('/home'); // chuyển đến trang chính
+        navigate('/home2'); // chuyển đến trang chính
       } else {
         alert('Đăng ký thành công nhưng đăng nhập thất bại!');
       }

@@ -161,7 +161,7 @@ const Navbar = () => {
       ),
       onClick: () => {
         localStorage.removeItem('token');
-        navigate('/home');
+        navigate('/home2S');
         window.location.reload(); // reload lại trang để cập nhật trạng thái đăng nhập
       }
     });
