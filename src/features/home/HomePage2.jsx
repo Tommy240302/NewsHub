@@ -300,7 +300,7 @@ const HomePage2 = () => {
         </div>
       </div>
 
-      {/* Footer Section */}
+      Footer Section
       <div
         style={{
           height: "250px",

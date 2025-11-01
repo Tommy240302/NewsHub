@@ -58,7 +58,8 @@
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  padding: 0 12px !important; /* giãn cách 2 bên cho đẹp */
+  padding: 0 5px !important; /* giãn cách 2 bên cho đẹp */
   white-space: nowrap !important; /* không xuống dòng */
 }
+
 

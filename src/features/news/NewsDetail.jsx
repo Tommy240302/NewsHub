@@ -130,7 +130,8 @@ export default function NewsDetailPage() {
         <article>
           <div id="main-article">
             <div>
-              <span id="category">{category.content}</span>
+              <span
+                id="category">{category.content}</span>
             </div>
             <div>
               <span>Tác giả: {authorName}</span> |{" "}
@@ -140,7 +141,17 @@ export default function NewsDetailPage() {
 
           <h1 id="title">{title}</h1>
 
-          <p id="summary">{summary}</p>
+          <p
+            id="summary"
+            style={{
+              fontSize: '14px',
+              color: '#666',
+              marginBottom: '1.5rem',
+              fontStyle: 'italic',
+            }}
+          >
+            {summary}
+          </p>
           <HtmlDisplay htmlContent={htmlContent}></HtmlDisplay>
         </article>
 
@@ -153,7 +164,7 @@ export default function NewsDetailPage() {
         >
           <h2
             style={{
-              fontSize: "1.5rem",
+              fontSize: "1.3rem",
               fontWeight: "bold",
               marginBottom: "1.5rem",
               color: "#1a237e",
@@ -165,7 +176,7 @@ export default function NewsDetailPage() {
           <div
             style={{
               color: "#666",
-              fontSize: "0.9rem",
+              fontSize: "0.7rem",
               marginBottom: "1rem",
             }}
           >
