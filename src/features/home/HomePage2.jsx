@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { newsAPI } from "../../common/api";
 import "@fontsource/merriweather";
 import { useNavigate } from "react-router-dom";
+import { PhoneOutlined } from "@ant-design/icons";
 
 const safeText = (val) => (typeof val === "string" ? val : "");
 const safeNumber = (val) => (typeof val === "number" ? val : 0);
@@ -18,8 +19,8 @@ const HomePage2 = () => {
         const rawData = Array.isArray(res.data)
           ? res.data
           : Array.isArray(res.data?.data)
-          ? res.data.data
-          : [];
+            ? res.data.data
+            : [];
 
         const filtered = rawData.filter(
           (item) =>
@@ -300,177 +301,60 @@ const HomePage2 = () => {
         </div>
       </div>
 
-      Footer Section
-      <div
-        style={{
-          height: "250px",
-          marginTop: "50px",
-          backgroundColor: "#2C2C2C",
-          marginLeft: "-120px",
-          marginRight: "-120px",
-          marginBottom: "-120px",
-        }}
-      >
-        {/* Top section */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr",
-            gap: "40px",
-            marginBottom: "40px",
-          }}
-        >
-          {/* Logo + Slogan */}
-          <div style={{ paddingTop: "30px", marginLeft: "40px" }}>
-            <h2
-              style={{
-                color: "#DC143C",
-                fontWeight: "bold",
-                fontSize: "24px",
-              }}
-            >
-              NEWSHUB
-            </h2>
-            <p style={{ marginTop: "10px", fontSize: "14px", color: "#F75270" }}>
-              “Stay Informed, Stay Ahead with Breaking News and In-Depth Insights.”
+      <div className="border-t border-[#D3DAD9] mt-[30px]">
+        <div className="grid grid-cols-8 items-center h-[50px]">
+          <div className="text-[#0f4c75] font-bold text-[16px]">
+            <strong>&nbsp; JS NEWS HUB</strong>
+          </div>
+          <div></div>
+          <div></div>
+      
+          <div className="text-[#44444E] cursor-pointer"
+            onClick={() => navigate("/contact")}>
+            Contact Us
+          </div>
+          <div className="text-[#44444E]">
+            Privacy Policy
+          </div>
+          <div className="text-[#44444E]">
+            Terms of Service
+          </div>
+          <div className="text-right text-[#44444E]">
+            Đường dây nóng: 
+          </div>
+          <h3 className="text-center flex items-center justify-center gap-2">
+            <PhoneOutlined /> &nbsp;
+            0862382035&nbsp;</h3>
+        </div>
+        <div className="border-t border-[#D3DAD9]">
+          <div className="grid grid-cols-3 mb-[-100px] mt-[10px]">
+            <p className="leading-relaxed text-[#313647] text-[13px]">
+              <strong>Báo tiếng Việt mới nhất</strong> <br />
+              Đồ án tốt nghiệp của sinh viên <br />
+              Học viện Công nghệ Bưu chính Viễn thông - PTIT <br />
+              Địa chỉ: 97 Man Thiện, Phường Hiệp Phú, Quận 9, TP. Hồ Chí Minh <br />
+              Ngành: Công nghệ thông tin <br />
+              Khóa: D20CQCNPM-2 <br />
             </p>
-            <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
-              <span>🌐</span>
-              <span>🐦</span>
-              <span>📸</span>
-              <span>💼</span>
+            <p className="text-[#313647] text-[13px] text-center">
+              <strong>Dưới sự hướng dẫn của thầy</strong><br/>
+               Nguyễn Ngọc Duy <br />
+              <strong>Được thực hiện bởi</strong> <br />
+              Lại Khắc Minh Quang-N20DCCN056 <br />
+              Nguyễn Tiến Đạt-N20DCCN060 <br />
+            </p>
+            <div className="text-right text-[#313647] text-[13px]">
+              © 11 - 2025. Hoàn thiện vào tháng 11 - 2025&nbsp; <br />
+              <strong>Email: </strong>
+              laikhacminhquang24032002@gmail.com <br />
+              <strong>Số điện thoại: </strong>
+              0862382035 <br />
             </div>
           </div>
 
-          {/* Contact */}
-          <div style={{ paddingTop: "20px" }}>
-            <h3
-              style={{
-                fontWeight: "bold",
-                marginBottom: "10px",
-                fontSize: "24px",
-                color: "#DDF4E7",
-              }}
-            >
-              Contact
-            </h3>
-            <div
-              style={{
-                display: "grid",
-                rowGap: "6px",
-                color: "#fff",
-                fontSize: "14px",
-              }}
-            >
-              <p>Email</p>
-              <p>Phone</p>
-              <p>Address</p>
-              <p>Call center</p>
-            </div>
-          </div>
-
-          {/* Service */}
-          <div style={{ paddingTop: "20px" }}>
-            <h3
-              style={{
-                fontWeight: "bold",
-                marginBottom: "10px",
-                fontSize: "24px",
-                color: "#DDF4E7",
-              }}
-            >
-              Service
-            </h3>
-            <div
-              style={{
-                color: "#fff",
-                fontSize: "14px",
-                display: "grid",
-                rowGap: "6px",
-              }}
-            >
-              <p>Contact Us</p>
-              <p>FAQ</p>
-              <p>Shipping & Returns</p>
-              <p>Warranty</p>
-            </div>
-          </div>
-
-          {/* Events */}
-          <div style={{ paddingTop: "20px" }}>
-            <h3
-              style={{
-                fontWeight: "bold",
-                marginBottom: "10px",
-                fontSize: "24px",
-                color: "#DDF4E7",
-              }}
-            >
-              Events
-            </h3>
-            <div
-              style={{
-                color: "#fff",
-                fontSize: "14px",
-                display: "grid",
-                rowGap: "6px",
-              }}
-            >
-              <p>Summer 2023</p>
-              <p>Spring 2023</p>
-              <p>NYFW 2023</p>
-              <p>PFW 2023</p>
-            </div>
-          </div>
-
-          {/* Follow Us */}
-          <div style={{ paddingTop: "20px" }}>
-            <h3
-              style={{
-                fontWeight: "bold",
-                marginBottom: "10px",
-                fontSize: "24px",
-                color: "#DDF4E7",
-              }}
-            >
-              Follow Us
-            </h3>
-            <div
-              style={{
-                color: "#fff",
-                fontSize: "14px",
-                display: "grid",
-                rowGap: "6px",
-              }}
-            >
-              <p>Facebook</p>
-              <p>Instagram</p>
-              <p>Pinterest</p>
-              <p>Twitter</p>
-            </div>
-          </div>
         </div>
 
-        {/* Bottom section */}
-        <div
-          style={{
-            borderTop: "1px solid #444",
-            paddingTop: "20px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            fontSize: "14px",
-            color: "#aaa",
-            paddingLeft: "40px",
-            paddingRight: "40px",
-          }}
-        >
-          <p>All rights reserved © 2025</p>
-          <div style={{ display: "flex", gap: "20px" }}>
-            <span>📞 +84 862 382 035</span>
-            <span>📍 Ho Chi Minh City, Viet Nam</span>
-          </div>
-        </div>
+
       </div>
     </div>
   );

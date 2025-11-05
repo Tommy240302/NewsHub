@@ -23,11 +23,13 @@ import './Navbar.css';
 import { jwtDecode } from 'jwt-decode';
 import { useMemo } from 'react'; 
 import { colors } from '@mui/material';
+import { te } from 'date-fns/locale';
 
 const { Header } = Layout;
 const { Title } = Typography;
 
 export const NAVBAR_HEIGHT = 64;
+const textColor = "#1D1616";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -184,7 +186,7 @@ const Navbar = () => {
         display: 'flex',
         alignItems: 'center',
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-        borderBottom: '1px solid #F2F2F2',
+        borderBottom: '1.5px solid #D3DAD9',
       }}
     >
       {/* Logo */}
@@ -208,7 +210,7 @@ const Navbar = () => {
         }}
       >
 
-        <div style={{ fontSize: 14, color: '#0C2B4E', minWidth: '200px', textAlign: 'right' }}>
+        <div style={{ fontSize: 14, color: textColor, minWidth: '200px', textAlign: 'right' }}>
           <div>
             {dateTime.toLocaleDateString('vi-VN', {
               weekday: 'long',
@@ -220,12 +222,12 @@ const Navbar = () => {
         </div>
 
         <Menu.Item style={
-          { color: '#0C2B4E' }
+          { color: textColor }
         } key="hot" icon={<FireOutlined />}>
           <Link to="/hotnews">Tin mới nhất</Link>
         </Menu.Item>
         <Menu.Item style={
-          { color: '#0C2B4E' }
+          { color: textColor }
         } key="featured" icon={<StarOutlined />}>
           <Link to="/trendnews">Tin nổi bật</Link>
         </Menu.Item>
@@ -254,7 +256,7 @@ const Navbar = () => {
               type="text"
               icon={isLoggedIn ? <UserOutlined /> : <DownOutlined />}
               style={{
-                color: '#222',
+                color: textColor,
                 fontSize: '18px',
                 borderRadius: '50%',
                 backgroundColor: 'rgba(255,255,255,0.1)',

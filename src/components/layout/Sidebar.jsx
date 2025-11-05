@@ -52,8 +52,8 @@ const Sidebar = () => {
   return (
     <div
       style={{
-        background: '#FBFBFB',
-        borderBottom: '1px solid #F2F2F2',
+        background: '#F8F8F8',
+        borderBottom: '2px solid #D3DAD9',
         top: 64,
         position: 'fixed',
         width: '100%',
