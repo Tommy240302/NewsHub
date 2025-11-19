@@ -163,8 +163,8 @@ const Navbar = () => {
       ),
       onClick: () => {
         localStorage.removeItem('token');
-        navigate('/home2S');
-        window.location.reload(); // reload lại trang để cập nhật trạng thái đăng nhập
+        navigate('/home2');
+        window.location.reload();
       }
     });
   }
