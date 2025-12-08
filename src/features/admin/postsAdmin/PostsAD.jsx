@@ -20,6 +20,7 @@ import {
   TextField,
   InputAdornment,
   Pagination,
+  Chip,
 } from "@mui/material";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -47,6 +48,73 @@ const PostsAD = () => {
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [previewContent, setPreviewContent] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
+
+  const [conflictDialogOpen, setConflictDialogOpen] = useState(false);
+  const [selectedConflictPost, setSelectedConflictPost] = useState(null);
+  const [selectedLabel, setSelectedLabel] = useState(null);
+  const [aiCategory, setAiCategory] = useState({
+    id: -1,
+    content: "",
+  });
+  const [humanCategory, setHumanCategory] = useState({
+    id: -1,
+    content: "",
+  });
+
+  const handleLabelConflict = (post) => {
+    const aiLabel = post.categories.find(
+      (category) => category.dataType === "AI"
+    );
+    const humanLabel = post.categories.find(
+      (category) => category.dataType === "HUMAN"
+    );
+
+    setSelectedConflictPost(post);
+
+    // Set categories here, not in render
+    if (aiLabel) {
+      setAiCategory({
+        id: aiLabel.id,
+        content: aiLabel.category.content,
+      });
+    }
+
+    if (humanLabel) {
+      setHumanCategory({
+        id: humanLabel.id,
+        content: humanLabel.category.content,
+      });
+    }
+
+    setSelectedLabel(null);
+    setConflictDialogOpen(true);
+  };
+
+  const handleResolveConflict = async () => {
+    if (!selectedConflictPost || !selectedLabel) return;
+
+    try {
+      const finalLabel =
+        selectedLabel === "ai" ? aiCategory.id : humanCategory.id;
+
+      const response = await apiClient.patch(
+        "admin/news/resolve/" + finalLabel
+      );
+
+      console.log(
+        "Resolved conflict for post:",
+        selectedConflictPost.id,
+        "with label id:",
+        finalLabel
+      );
+      setConflictDialogOpen(false);
+      setSelectedConflictPost(null);
+      setSelectedLabel(null);
+      fetchPendingPosts();
+    } catch (error) {
+      console.error("Error resolving conflict:", error);
+    }
+  };
 
   const fetchAllPosts = async (
     currentSearchTerm = searchTerm,
@@ -367,56 +435,167 @@ const PostsAD = () => {
                     <TableCell>Tiêu đề</TableCell>
                     <TableCell>Tác giả</TableCell>
                     <TableCell>Ngày tạo</TableCell>
+                    <TableCell>Kết quả nhãn</TableCell>
                     <TableCell align="center">Hành động</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {pendingPosts.map((post) => (
-                    <TableRow key={post.id}>
-                      <TableCell>{post.id}</TableCell>
-                      <TableCell>{post.title}</TableCell>
-                      <TableCell>{post.authorName}</TableCell>
-                      <TableCell>
-                        {post.createdAt
-                          ? new Date(post.createdAt).toLocaleDateString("vi-VN")
-                          : "N/A"}
-                      </TableCell>
-                      <TableCell align="center">
-                        <IconButton
-                          size="small"
-                          color="success"
-                          onClick={() => handleApprovePost(post.id)}
-                          disabled={post.isDeleted || post.status}
-                          title="Duyệt bài viết"
-                        >
-                          <CheckIcon />
-                        </IconButton>
-                        <IconButton
-                          size="small"
-                          color="warning"
-                          onClick={() => handleSoftDeletePost(post.id)}
-                          disabled={post.isDeleted || post.status}
-                          title="Từ chối (Xóa mềm)"
-                        >
-                          <CloseIcon />
-                        </IconButton>
-                        <IconButton
-                          size="small"
-                          color="info"
-                          onClick={() =>
-                            handlePreviewPost(post.content, post.title)
-                          }
-                          title="Xem trước nội dung"
-                        >
-                          <VisibilityIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {pendingPosts.map((post) => {
+                    const aiLabel = post.categories.find(
+                      (category) => category.dataType == "AI"
+                    );
+                    const humanLabel = post.categories.find(
+                      (category) => category.dataType == "HUMAN"
+                    );
+
+                    const isConflict =
+                      aiLabel &&
+                      humanLabel &&
+                      aiLabel.category.content !==
+                        humanLabel.category.content &&
+                      !aiLabel.selected &&
+                      !humanLabel.selected;
+                    return (
+                      <TableRow key={post.id}>
+                        <TableCell>{post.id}</TableCell>
+                        <TableCell>{post.title}</TableCell>
+                        <TableCell>{post.authorName}</TableCell>
+                        <TableCell>
+                          {post.createdAt
+                            ? new Date(post.createdAt).toLocaleDateString(
+                                "vi-VN"
+                              )
+                            : "N/A"}
+                        </TableCell>
+                        <TableCell>
+                          {isConflict ? (
+                            <Chip
+                              label="Conflict"
+                              color="error"
+                              size="small"
+                              onClick={() => handleLabelConflict(post)}
+                              sx={{ cursor: "pointer" }}
+                            />
+                          ) : (
+                            <Chip
+                              label={
+                                aiLabel?.selected
+                                  ? aiLabel.category.content
+                                  : humanLabel?.selected
+                                  ? humanLabel.category.content
+                                  : "N/A"
+                              }
+                              color="success"
+                              size="small"
+                            />
+                          )}
+                        </TableCell>
+                        <TableCell align="center">
+                          <IconButton
+                            size="small"
+                            color="success"
+                            onClick={() => handleApprovePost(post.id)}
+                            disabled={
+                              post.isDeleted || post.status || isConflict
+                            }
+                            title="Duyệt bài viết"
+                          >
+                            <CheckIcon />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            color="warning"
+                            onClick={() => handleSoftDeletePost(post.id)}
+                            disabled={post.isDeleted || post.status}
+                            title="Từ chối (Xóa mềm)"
+                          >
+                            <CloseIcon />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            color="info"
+                            onClick={() =>
+                              handlePreviewPost(post.content, post.title)
+                            }
+                            title="Xem trước nội dung"
+                          >
+                            <VisibilityIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </TableContainer>
           )}
+          <Dialog
+            open={conflictDialogOpen}
+            onClose={() => setConflictDialogOpen(false)}
+            maxWidth="sm"
+            fullWidth
+          >
+            <DialogTitle>Giải quyết xung đột nhãn</DialogTitle>
+            <DialogContent>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Bài viết: <strong>{selectedConflictPost?.title}</strong>
+              </Typography>
+              <Box
+                sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}
+              >
+                <Paper
+                  elevation={selectedLabel === "ai" ? 3 : 1}
+                  sx={{
+                    p: 2,
+                    cursor: "pointer",
+                    border: selectedLabel === "ai" ? "2px solid" : "1px solid",
+                    borderColor:
+                      selectedLabel === "ai" ? "primary.main" : "divider",
+                    transition: "all 0.2s",
+                  }}
+                  onClick={() => setSelectedLabel("ai")}
+                >
+                  <Typography variant="subtitle2" color="primary">
+                    🤖 Nhãn từ AI/Model
+                  </Typography>
+                  <Typography variant="h6" sx={{ mt: 1 }}>
+                    {aiCategory.content || "N/A"}
+                  </Typography>
+                </Paper>
+
+                <Paper
+                  elevation={selectedLabel === "human" ? 3 : 1}
+                  sx={{
+                    p: 2,
+                    cursor: "pointer",
+                    border:
+                      selectedLabel === "human" ? "2px solid" : "1px solid",
+                    borderColor:
+                      selectedLabel === "human" ? "secondary.main" : "divider",
+                    transition: "all 0.2s",
+                  }}
+                  onClick={() => setSelectedLabel("human")}
+                >
+                  <Typography variant="subtitle2" color="secondary">
+                    👤 Nhãn từ Người dùng
+                  </Typography>
+                  <Typography variant="h6" sx={{ mt: 1 }}>
+                    {humanCategory.content || "N/A"}
+                  </Typography>
+                </Paper>
+              </Box>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setConflictDialogOpen(false)}>Hủy</Button>
+              <Button
+                onClick={handleResolveConflict}
+                variant="contained"
+                disabled={!selectedLabel}
+              >
+                Xác nhận chọn
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Box>
       )}
 
