@@ -59,6 +59,17 @@ const CreateNews = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const renderOptions = (categories, prefix = "") => {
+  return categories.flatMap((category) => [
+    <Option key={category.id} value={category.id}>
+      {prefix + category.content}
+    </Option>,
+    ...(category.children && category.children.length > 0
+      ? renderOptions(category.children, prefix + "- ")
+      : []),
+  ]);
+};
+
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -880,11 +891,7 @@ ${htmlContent}
               placeholder={loadingCategories ? "Đang tải..." : "Chọn chủ đề"}
               disabled={loadingCategories || categories.length === 0}
             >
-              {categories.map((category) => (
-                <Option value={category.id} key={category.id}>
-                  {category.content}
-                </Option>
-              ))}
+              {renderOptions(categories)}
             </Select>
           </div>
 

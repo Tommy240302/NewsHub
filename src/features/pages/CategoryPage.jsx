@@ -10,6 +10,8 @@ const CategoryPage = () => {
   const [newsList, setNewsList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categoryName, setCategoryName] = useState("");
+  const [categoryContent, setCategoryContent] = useState("");
+
 
   useEffect(() => {
     const fetchCategoryName = async () => {
@@ -50,6 +52,10 @@ const CategoryPage = () => {
           (item) => item.isDeleted === false || item.isDeleted === 0
         );
 
+        if (filteredNews.length > 0) {
+          setCategoryContent(filteredNews[0]?.category?.content || "");
+        }
+
         const sortedNews = [...filteredNews].sort((a, b) => {
           const timeA = new Date(a.publishedAt).getTime();
           const timeB = new Date(b.publishedAt).getTime();
@@ -74,7 +80,7 @@ const CategoryPage = () => {
     <Card
       title={
         <span style={{ fontSize: '24px', color: '#1890ff', fontWeight: 'bold' }}>
-          Chuyên mục: {categoryName || "Đang tải..."}
+          Chuyên mục: {categoryContent || "Đang tải..."}
         </span>
       }
       style={{ margin: 24 }}

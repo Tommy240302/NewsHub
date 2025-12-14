@@ -1,0 +1,65 @@
+/* Reset mọi padding, margin ở menu ngang */
+.ant-menu-horizontal,
+.ant-menu-overflow {
+  padding-inline-start: 0 !important;
+  margin: 0 !important;
+}
+
+/* Xóa padding & margin của phần tử đầu tiên */
+.ant-menu-horizontal > .ant-menu-overflow-item:first-child,
+.ant-menu-overflow > .ant-menu-overflow-item:first-child {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+/* Fix phần tử ẩn rest (menu responsive của AntD) gây lệch trái */
+.ant-menu-overflow-item-rest {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+/* Đảm bảo Menu chiếm toàn bộ chiều ngang, chia đều items */
+.ant-menu-overflow {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Loại bỏ khoảng cách thừa giữa các item */
+.ant-menu-item {
+  padding: 0 16px !important;
+  margin: 0 !important;
+}
+
+/* Nếu vẫn còn thụt do browser rendering, ép lại inline-start */
+.ant-menu-overflow::before {
+  content: '' !important;
+  display: none !important;
+}
+
+/* Cho phép tiêu đề SubMenu tự giãn theo text */
+.ant-menu-submenu-title span {
+  display: inline-block !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px; /* tăng lên nếu muốn rộng hơn */
+  vertical-align: middle;
+}
+
+/* Cho phép SubMenu hiển thị rộng theo nội dung */
+.ant-menu-horizontal > .ant-menu-submenu {
+  flex: 0 0 auto !important; /* không bị flex bó lại */
+}
+
+.ant-menu-submenu-title {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px !important; /* giãn cách 2 bên cho đẹp */
+  white-space: nowrap !important; /* không xuống dòng */
+}
+
+

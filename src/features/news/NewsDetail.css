@@ -78,112 +78,21 @@ article {
 }
 
 #title {
-    font-size: 3rem;
-    font-weight: 800;
-    color: #111827;
-    margin: 2rem 0;
-    line-height: 1.1;
-    background: linear-gradient(135deg, #1f2937 0%, #4f46e5 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #1a237e;
+    line-height: 1.3;
 }
 
-#summary {
-    font-size: 1.3rem;
-    color: #6b7280;
-    font-style: italic;
-    margin: 2rem 0;
-    padding: 2rem;
-    background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
-    border-left: 5px solid #667eea;
-    border-radius: 0 15px 15px 0;
-    position: relative;
-    overflow: hidden;
+p#summary[style] {
+  font-size: 14px !important;
+  color: #666 !important;
+  margin-bottom: 1.5rem !important;
+  font-style: italic !important;
 }
 
-#summary::before {
-    content: '"';
-    position: absolute;
-    top: -10px;
-    left: 15px;
-    font-size: 4rem;
-    color: #667eea;
-    opacity: 0.3;
-    font-family: Georgia, serif;
-}
 
-/* Comment Section */
-.comment-section {
-    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-    padding: 3rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.comment-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
-    background-size: 400% 400%;
-    animation: gradientShift 3s ease infinite;
-}
-
-@keyframes gradientShift {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-.comment-section h2 {
-    font-size: 2.5rem;
-    font-weight: 800;
-    margin-bottom: 2rem;
-    color: #1f2937;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    position: relative;
-}
-
-.comment-section h2::before {
-    content: "💬";
-    font-size: 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 0.5rem;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-}
-
-.comment-count {
-    color: #6b7280;
-    font-size: 1.1rem;
-    margin-bottom: 2.5rem;
-    font-weight: 500;
-    background: white;
-    padding: 1rem 1.5rem;
-    border-radius: 50px;
-    display: inline-block;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e5e7eb;
-}
-
-/* Comment Form */
 #commentForm {
     background: white;
     padding: 3rem;
@@ -213,13 +122,15 @@ article {
     font-size: 1.1rem;
 }
 
+.rich-text-content { font-size: 15px !important; }
+
+
 #commentText {
     width: 100%;
-    min-height: 140px;
-    padding: 1.5rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 15px;
-    font-size: 1rem;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.7rem;
     font-family: inherit;
     resize: vertical;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -243,17 +154,11 @@ article {
 #submmitButton {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border: none;
-    padding: 1rem 2.5rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border-radius: 50px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-    position: relative;
-    overflow: hidden;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+    transition: 0.3s;
 }
 
 #submmitButton::before {
@@ -309,8 +214,10 @@ article {
     box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5);
 }
 
-#loginButton:hover::before {
-    left: 100%;
+.rich-text-content {
+    margin: 10px 0;
+    line-height: 1.5;
+    font-size: 14px;
 }
 
 /* Comment Styles */
