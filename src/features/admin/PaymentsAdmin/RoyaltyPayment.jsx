@@ -338,6 +338,75 @@ const AuthorPaymentTable = () => {
       setVisible(true);
     }
   };
+  // Transaction operations
+  const handleExportTransaction = (record) => {
+    const parsed = parseJsonData(record.jsonData);
+
+    if (!parsed || !parsed.data) {
+      message.error("No data to export");
+      return;
+    }
+
+    let exportData;
+
+    // Check if data is array or single object
+    if (parsed.isArray) {
+      exportData = parsed.data.map((item) => ({
+        "ID Tác giả": item.userId,
+        "Số tài khoản": item.paymentNumber,
+        "Số tiền": item.amount,
+        Views: item.viewCurrent,
+      }));
+    } else {
+      exportData = [
+        {
+          "ID tác giả": parsed.data.userId,
+          "Số tài khoản": parsed.data.paymentNumber,
+          "Số tiền": parsed.data.amount,
+          Views: parsed.data.viewCurrent,
+        },
+      ];
+    }
+
+    if (exportData.length === 0) {
+      console.log("export thành công");
+      return;
+    }
+
+    const headers = Object.keys(exportData[0]);
+    const csvContent = [
+      headers.join(","),
+      ...exportData.map((row) =>
+        headers
+          .map((header) => {
+            const value = row[header];
+            if (
+              typeof value === "string" &&
+              (value.includes(",") || value.includes('"'))
+            ) {
+              return `"${value.replace(/"/g, '""')}"`;
+            }
+            return value;
+          })
+          .join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob(["\ufeff" + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `transaction_${record.id}_${new Date().toISOString().split("T")[0]}.csv`
+    );
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const filteredTransactions =
     statusFilter === "ALL"
@@ -609,6 +678,14 @@ const AuthorPaymentTable = () => {
             onClick={() => handleViewTransaction(record)}
           >
             Xem
+          </Button>
+          <Button
+            type="default"
+            icon={<DownloadOutlined />}
+            size="small"
+            onClick={() => handleExportTransaction(record)}
+          >
+            Export
           </Button>
           {record.status === "PENDING" && (
             <>
