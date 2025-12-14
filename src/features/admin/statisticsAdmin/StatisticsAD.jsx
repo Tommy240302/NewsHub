@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -14,10 +14,19 @@ import {
   Grid,
   Card,
   CardContent,
-  TablePagination, // Import TablePagination
-} from '@mui/material';
+  TablePagination,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Modal,
+  IconButton,
+} from "@mui/material";
+import AnalyticsIcon from "@mui/icons-material/Analytics";
+import apiClient from "../../../api/apiClient";
 
-import apiClient from '../../../api/apiClient';
+// Mock apiClient for demonstration
 
 const Statistics = () => {
   const [authorRevenue, setAuthorRevenue] = useState([]);
@@ -40,25 +49,36 @@ const Statistics = () => {
         setError(null);
 
         // Fetch Author Revenue
-        const revenueResponse = await apiClient.get('/admin/statistics/top-authors-by-revenue');
+        const revenueResponse = await apiClient.get(
+          "/admin/statistics/top-authors-by-revenue"
+        );
         if (revenueResponse.data && Array.isArray(revenueResponse.data.data)) {
           setAuthorRevenue(revenueResponse.data.data);
         } else {
-          setError('Cấu trúc dữ liệu doanh thu tác giả không hợp lệ.');
-          console.error("Statistics: Invalid author revenue data structure:", revenueResponse.data);
+          setError("Cấu trúc dữ liệu doanh thu tác giả không hợp lệ.");
+          console.error(
+            "Statistics: Invalid author revenue data structure:",
+            revenueResponse.data
+          );
         }
 
         // Fetch Most Viewed Posts
-        const postsResponse = await apiClient.get('/admin/statistics/top-news-by-views');
+        const postsResponse = await apiClient.get(
+          "/admin/statistics/top-news-by-views"
+        );
         if (postsResponse.data && Array.isArray(postsResponse.data.data)) {
           setMostViewedPosts(postsResponse.data.data);
         } else {
-          setError('Cấu trúc dữ liệu bài viết xem nhiều nhất không hợp lệ.');
-          console.error("Statistics: Invalid most viewed posts data structure:", postsResponse.data);
+          setError("Cấu trúc dữ liệu bài viết xem nhiều nhất không hợp lệ.");
+          console.error(
+            "Statistics: Invalid most viewed posts data structure:",
+            postsResponse.data
+          );
         }
       } catch (err) {
-        const errorMessage = err.response?.data?.message || err.message || 'Không rõ nguyên nhân.';
-        setError('Không thể tải dữ liệu thống kê: ' + errorMessage);
+        const errorMessage =
+          err.response?.data?.message || err.message || "Không rõ nguyên nhân.";
+        setError("Không thể tải dữ liệu thống kê: " + errorMessage);
         console.error("Statistics: Error fetching statistics:", err);
       } finally {
         setLoading(false);
@@ -90,27 +110,24 @@ const Statistics = () => {
     setPostsPage(0);
   };
 
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
-        <CircularProgress />
-        <Typography variant="h6" sx={{ ml: 2 }}>Đang tải thống kê...</Typography>
-      </Box>
-    );
-  }
-
-  if (error) {
-    return <Alert severity="error">{error}</Alert>;
-  }
-
-  const totalRevenue = authorRevenue.reduce((sum, author) => sum + author.totalRevenue, 0);
+  const totalRevenue = authorRevenue.reduce(
+    (sum, author) => sum + author.totalRevenue,
+    0
+  );
   const totalViews = mostViewedPosts.reduce((sum, post) => sum + post.views, 0);
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Thống kê Tổng quan
-      </Typography>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ mb: 3 }}
+      >
+        <Typography variant="h4" component="h1">
+          Thống kê Tổng quan
+        </Typography>
+      </Box>
 
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={4}>
@@ -120,7 +137,7 @@ const Statistics = () => {
                 Tổng Doanh thu Tác giả
               </Typography>
               <Typography variant="h4" component="div">
-                {totalRevenue.toLocaleString('vi-VN')} VND
+                {totalRevenue.toLocaleString("vi-VN")} VND
               </Typography>
             </CardContent>
           </Card>
@@ -132,7 +149,7 @@ const Statistics = () => {
                 Tổng Lượt xem Bài viết
               </Typography>
               <Typography variant="h4" component="div">
-                {totalViews.toLocaleString('vi-VN')}
+                {totalViews.toLocaleString("vi-VN")}
               </Typography>
             </CardContent>
           </Card>
@@ -141,13 +158,19 @@ const Statistics = () => {
 
       <Grid container spacing={3}>
         {/* Bảng Doanh thu của Tác giả */}
-        <Grid item xs={12} md={6}> {/* Dùng md={6} để chia đôi màn hình trên desktop */}
+        <Grid item xs={12} md={6}>
+          {" "}
+          {/* Dùng md={6} để chia đôi màn hình trên desktop */}
           <Paper elevation={3} sx={{ p: 2 }}>
             <Typography variant="h5" component="h2" gutterBottom>
               Doanh thu của Tác giả
             </Typography>
             {authorRevenue.length === 0 ? (
-              <Typography variant="body1" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{ fontStyle: "italic" }}
+              >
                 Chưa có dữ liệu doanh thu tác giả để hiển thị.
               </Typography>
             ) : (
@@ -161,12 +184,21 @@ const Statistics = () => {
                   </TableHead>
                   <TableBody>
                     {(revenueRowsPerPage > 0
-                      ? authorRevenue.slice(revenuePage * revenueRowsPerPage, revenuePage * revenueRowsPerPage + revenueRowsPerPage)
+                      ? authorRevenue.slice(
+                          revenuePage * revenueRowsPerPage,
+                          revenuePage * revenueRowsPerPage + revenueRowsPerPage
+                        )
                       : authorRevenue
                     ).map((author) => (
                       <TableRow key={author.authorId}>
-                        <TableCell>{`${author.authorFirstName || ''} ${author.authorLastName || ''}`.trim() || author.authorEmail}</TableCell>
-                        <TableCell align="right">{author.totalRevenue.toLocaleString('vi-VN')}</TableCell>
+                        <TableCell>
+                          {`${author.authorFirstName || ""} ${
+                            author.authorLastName || ""
+                          }`.trim() || author.authorEmail}
+                        </TableCell>
+                        <TableCell align="right">
+                          {author.totalRevenue.toLocaleString("vi-VN")}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -178,9 +210,16 @@ const Statistics = () => {
                   onPageChange={handleRevenueChangePage}
                   rowsPerPage={revenueRowsPerPage}
                   onRowsPerPageChange={handleRevenueChangeRowsPerPage}
-                  rowsPerPageOptions={[5, 10, 25, { label: 'Tất cả', value: -1 }]}
+                  rowsPerPageOptions={[
+                    5,
+                    10,
+                    25,
+                    { label: "Tất cả", value: -1 },
+                  ]}
                   labelRowsPerPage="Hàng mỗi trang:"
-                  labelDisplayedRows={({ from, to, count }) => `${from}-${to} trong số ${count}`}
+                  labelDisplayedRows={({ from, to, count }) =>
+                    `${from}-${to} trong số ${count}`
+                  }
                 />
               </TableContainer>
             )}
@@ -188,13 +227,17 @@ const Statistics = () => {
         </Grid>
 
         {/* Bảng Bài viết có lượt xem cao nhất */}
-        <Grid item xs={12} md={6}> {/* Dùng md={6} để chia đôi màn hình trên desktop */}
+        <Grid item xs={12} md={6}>
           <Paper elevation={3} sx={{ p: 2 }}>
             <Typography variant="h5" component="h2" gutterBottom>
               Bài viết có lượt xem cao nhất
             </Typography>
             {mostViewedPosts.length === 0 ? (
-              <Typography variant="body1" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{ fontStyle: "italic" }}
+              >
                 Chưa có dữ liệu bài viết có lượt xem cao nhất để hiển thị.
               </Typography>
             ) : (
@@ -209,15 +252,27 @@ const Statistics = () => {
                   </TableHead>
                   <TableBody>
                     {(postsRowsPerPage > 0
-                      ? mostViewedPosts.slice(postsPage * postsRowsPerPage, postsPage * postsRowsPerPage + postsRowsPerPage)
+                      ? mostViewedPosts.slice(
+                          postsPage * postsRowsPerPage,
+                          postsPage * postsRowsPerPage + postsRowsPerPage
+                        )
                       : mostViewedPosts
                     ).map((post) => (
                       <TableRow key={post.newsId}>
                         <TableCell>{post.newsId}</TableCell>
-                        <TableCell sx={{ maxWidth: 250, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <TableCell
+                          sx={{
+                            maxWidth: 250,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
                           {post.newsTitle}
                         </TableCell>
-                        <TableCell align="right">{post.views.toLocaleString('vi-VN')}</TableCell>
+                        <TableCell align="right">
+                          {post.views.toLocaleString("vi-VN")}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -229,9 +284,16 @@ const Statistics = () => {
                   onPageChange={handlePostsChangePage}
                   rowsPerPage={postsRowsPerPage}
                   onRowsPerPageChange={handlePostsChangeRowsPerPage}
-                  rowsPerPageOptions={[5, 10, 25, { label: 'Tất cả', value: -1 }]}
+                  rowsPerPageOptions={[
+                    5,
+                    10,
+                    25,
+                    { label: "Tất cả", value: -1 },
+                  ]}
                   labelRowsPerPage="Hàng mỗi trang:"
-                  labelDisplayedRows={({ from, to, count }) => `${from}-${to} trong số ${count}`}
+                  labelDisplayedRows={({ from, to, count }) =>
+                    `${from}-${to} trong số ${count}`
+                  }
                 />
               </TableContainer>
             )}
