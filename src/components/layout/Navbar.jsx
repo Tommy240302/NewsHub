@@ -1,4 +1,4 @@
-import { Layout, Typography, Space, Button, Input, Dropdown } from 'antd';
+import { Layout, Typography, Space, Button, Input, Dropdown, AutoComplete, Menu } from 'antd';
 import {
   GlobalOutlined,
   SearchOutlined,
@@ -8,129 +8,175 @@ import {
   UserAddOutlined,
   BoldOutlined,
   PullRequestOutlined,
-  LogoutOutlined
+  LogoutOutlined,
+  StarOutlined,
+  FireOutlined,
+  HomeOutlined,
+  JavaScriptOutlined,
+  DownOutlined,
 } from '@ant-design/icons';
-import './Navbar.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { newsAPI } from "../../common/api";
-import { AutoComplete } from "antd";
+import { newsAPI } from '../../common/api';
+import { set } from 'lodash';
+import './Navbar.css';
+import { jwtDecode } from 'jwt-decode';
+import { useMemo } from 'react'; 
+import { colors } from '@mui/material';
+import { te } from 'date-fns/locale';
 
 const { Header } = Layout;
 const { Title } = Typography;
 
-const NAVBAR_HEIGHT = 64;
+export const NAVBAR_HEIGHT = 64;
+const textColor = "#1D1616";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [news, setNews] = useState([]);
   const [options, setOptions] = useState([]);
+  const [dateTime, setDateTime] = useState(new Date());
+  const [roles, setRoles] = useState([]);
+  const isLoggedIn = Boolean(localStorage.getItem('token'));
 
-  // lấy danh sách bài báo khi load trang
   useEffect(() => {
-    newsAPI.getAllNews().then(res => {
-      const newsArray = Array.isArray(res.data)
-        ? res.data
-        : res.data?.data || [];
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        console.log('Decoded token:', decoded);
+        setRoles(decoded.roles || []);
+        console.log('User roles:', decoded.roles);
+      } catch (error) {
+        console.error('Lỗi giải mã token:', error);
+      } 
+    }
+  }, []);
+
+  // Lấy danh sách bài báo
+  useEffect(() => {
+    newsAPI.getAllNews().then((res) => {
+      const newsArray = Array.isArray(res.data) ? res.data : res.data?.data || [];
       setNews(newsArray);
     });
   }, []);
-
-  // hàm xử lý gõ vào search
+  const interval = setInterval(() => {
+    setDateTime(new Date());
+  }, 60000);
+  // Xử lý tìm kiếm
   const handleSearch = (value) => {
     if (!value) {
       setOptions([]);
       return;
     }
     const filtered = news
-      .filter(item =>
-        item.title.toLowerCase().includes(value.toLowerCase())
-      )
-      .map(item => ({
-        value: item.id,   // id để navigate
-        label: item.title // hiện ra gợi ý
+      .filter((item) => item.title.toLowerCase().includes(value.toLowerCase()))
+      .map((item) => ({
+        value: item.id,
+        label: item.title,
       }));
 
     setOptions(filtered);
   };
 
-  // khi chọn 1 gợi ý
+  // Khi chọn 1 gợi ý
   const onSelect = (id) => {
     navigate(`/news/${id}`);
   };
 
-  const userMenuItems = [
+  // Menu người dùng
+ const userMenuItems = useMemo(() => {
+  console.log("Rendering menu, roles:", roles); // xem roles mỗi lần render
+
+  const items = [
     {
       key: 'info',
       label: (
-        <span className="user-menu-item">
-          <UserOutlined className="user-menu-icon" />
-          Thông tin người dùng
+        <span>
+          <UserOutlined /> Thông tin người dùng
         </span>
       ),
       onClick: () => navigate('/userprofile'),
     },
-    {
+  ];
+
+  // Chỉ thêm khi có role AUTHOR
+  if (Array.isArray(roles) && roles.includes('ROLE_AUTHOR')) {
+    items.push({
       key: 'create',
       label: (
-        <span className="user-menu-item">
-          <BoldOutlined className="user-menu-icon" />
-          Đăng bài
+        <span>
+          <BoldOutlined /> Đăng bài
         </span>
       ),
       onClick: () => navigate('/createnews'),
-    },
-    {
-      key: 'login',
-      label: (
-        <span className="user-menu-item">
-          <LoginOutlined className="user-menu-icon" />
-          Đăng nhập
+    });
+  }
+  // CHỉ thêm khi không có role AUTHOR
+  if (isLoggedIn && Array.isArray(roles) && !roles.includes('ROLE_AUTHOR')) {
+    items.push({
+      key: 'request',
+      label: (  
+        <span>
+          <PullRequestOutlined /> Yêu cầu tác giả
         </span>
       ),
-      onClick: () => navigate('/login'),
-    },
+      onClick: () => navigate('/request-author'),
+    });
+  }
+
+  if (!isLoggedIn) {
+    items.push(
+      {
+        key: 'login',
+        label: (
+          <span>
+            <LoginOutlined /> Đăng nhập
+          </span>
+        ),
+        onClick: () => navigate('/login'),
+      }
+    );
+  }
+  items.push(
     {
       key: 'register',
       label: (
-        <span className="user-menu-item">
-          <UserAddOutlined className="user-menu-icon" />
-          Đăng ký
+        <span>
+          <UserAddOutlined /> Đăng ký
         </span>
       ),
       onClick: () => navigate('/signup'),
     },
+    
     {
-      key: 'request-author',
-      label: (
-        <span className="user-menu-item">
-          <PullRequestOutlined className="user-menu-icon" />
-          Yêu cầu làm tác giả
-        </span>
-      ),
-      onClick: () => navigate('/request-author'),
+      type: 'divider',
     },
-    {
+  );
+  if (isLoggedIn) {
+    items.push({
       key: 'logout',
       label: (
-        <span className="user-menu-item">
-          <LogoutOutlined className="user-menu-icon" />
-          Đăng xuất
+        <span style={{color: '#DB4437', fontWeight: '500', fontSize: '16px', fontStyle: 'bold'}}>
+          <LogoutOutlined /> Đăng xuất
         </span>
       ),
       onClick: () => {
-        localStorage.clear();
-        navigate('/login');
+        localStorage.removeItem('token');
+        navigate('/home2');
+        window.location.reload();
       }
-    }
-  ];
+    });
+  }
+
+  return items;
+}, [roles]);
 
   return (
     <Header
       style={{
         background: '#fff',
-        padding: '0 24px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        padding: '0 120px',
         position: 'fixed',
         top: 0,
         left: 0,
@@ -138,26 +184,59 @@ const Navbar = () => {
         zIndex: 1100,
         height: NAVBAR_HEIGHT,
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        borderBottom: '1.5px solid #D3DAD9',
       }}
     >
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: '100%'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Link to="/home" style={{ textDecoration: 'none' }}>
-            <Title level={3} style={{ margin: 0, color: '#1890ff', cursor: 'pointer' }}>
-              <GlobalOutlined /> NewsHub
-            </Title>
-          </Link>
+      {/* Logo */}
+      <Link to="/home2" style={{ textDecoration: 'none', marginRight: 32, borderRight: '1px solid #222',
+         display: 'flex', alignItems: 'center', paddingRight: 24 }}>
+        <Title level={3} style={{ margin: 0, color: '#0F4C75', cursor: 'pointer', fontSize: 30, fontWeight: 'bold' }}>
+          <JavaScriptOutlined /> NewsHub
+        </Title>
+      </Link>
+
+      {/* Menu chính */}
+      <Menu
+        mode="horizontal"
+        selectable={false}
+        style={{
+          flex: 1,
+          borderBottom: 'none',
+          fontSize: 15,
+          justifyContent: 'center',
+          background: 'transparent',
+        }}
+      >
+
+        <div style={{ fontSize: 14, color: textColor, minWidth: '200px', textAlign: 'right' }}>
+          <div>
+            {dateTime.toLocaleDateString('vi-VN', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </div>
         </div>
 
-        {/* AutoComplete Search */}
+        <Menu.Item style={
+          { color: textColor }
+        } key="hot" icon={<FireOutlined />}>
+          <Link to="/hotnews">Tin mới nhất</Link>
+        </Menu.Item>
+        <Menu.Item style={
+          { color: textColor }
+        } key="featured" icon={<StarOutlined />}>
+          <Link to="/trendnews">Tin nổi bật</Link>
+        </Menu.Item>
+      </Menu>
+
+      {/* Search + Icons */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
         <AutoComplete
-          style={{ width: 300 }}
+          style={{ width: 280 }}
           options={options}
           onSearch={handleSearch}
           onSelect={onSelect}
@@ -167,30 +246,31 @@ const Navbar = () => {
         </AutoComplete>
 
         <Space>
-          <Button type="text" icon={<BellOutlined />} />
           <Dropdown
             menu={{ items: userMenuItems }}
             placement="bottomRight"
             trigger={['click']}
-            overlayStyle={{
-              borderRadius: 8,
-              padding: 8,
-            }}
+            overlayClassName="custom-dropdown"
           >
             <Button
               type="text"
-              icon={<UserOutlined />}
+              icon={isLoggedIn ? <UserOutlined /> : <DownOutlined />}
               style={{
-                padding: '0 12px',
-                height: 40,
+                color: textColor,
+                fontSize: '18px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(255,255,255,0.1)',
+                width: '40px',
+                height: '40px',
               }}
             />
           </Dropdown>
+
         </Space>
+
       </div>
     </Header>
   );
 };
 
 export default Navbar;
-export const NAVBAR_HEIGHT_PX = 20;

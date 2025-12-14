@@ -442,7 +442,8 @@ export default function NewsDetailPage() {
         <article>
           <div id="main-article">
             <div>
-              <span id="category">{category.content}</span>
+              <span
+                id="category">{category.content}</span>
             </div>
             <div>
               <span>Tác giả: {authorName}</span> |{" "}
@@ -452,14 +453,45 @@ export default function NewsDetailPage() {
 
           <h1 id="title">{title}</h1>
 
-          <p id="summary">{summary}</p>
+          <p
+            id="summary"
+            style={{
+              fontSize: '14px',
+              color: '#666',
+              marginBottom: '1.5rem',
+              fontStyle: 'italic',
+            }}
+          >
+            {summary}
+          </p>
           <HtmlDisplay htmlContent={htmlContent}></HtmlDisplay>
         </article>
 
-        <section className="comment-section">
-          <h2>Comments</h2>
+        <section
+          style={{
+            background: "#f8f9fa",
+            padding: "2rem",
+            borderTop: "3px solid #1a237e",
+          }}
+        >
+          <h2
+            style={{
+              fontSize: "1.3rem",
+              fontWeight: "bold",
+              marginBottom: "1.5rem",
+              color: "#1a237e",
+            }}
+          >
+            Comments
+          </h2>
 
-          <div className="comment-count">
+          <div
+            style={{
+              color: "#666",
+              fontSize: "0.7rem",
+              marginBottom: "1rem",
+            }}
+          >
             <span>{comments.length}</span> comments
           </div>
 

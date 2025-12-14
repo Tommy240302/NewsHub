@@ -84,9 +84,6 @@ const UserProfile = () => {
                             <li onClick={() => navigate('')}>
                                 <LockOutlined /> Đổi mật khẩu
                             </li>
-                            <li onClick={() => navigate('')}>
-                                <FileTextOutlined /> Hoạt động bình luận
-                            </li>
                             <li className="active" onClick={() => navigate('/savenews')}>
                                 <FileTextOutlined /> Tin đã đăng
                             </li>

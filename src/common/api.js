@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { get } from 'lodash';
+import { chain, get } from 'lodash';
+import ChangePassword from '../features/auth/ChangePassword';
 
 // Tạo instance axios với cấu hình mặc định
 const api = axios.create({
@@ -80,7 +81,9 @@ export const authAPI = {
   forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
   
   // Reset mật khẩu
-  resetPassword: (token, newPassword) => api.post('/auth/reset-password', { token, newPassword }),
+  resetPassword: (email, oldPassword, newPassword) =>
+  api.post('/auth/change-password', { email, oldPassword, newPassword }),
+
 
 };
 
