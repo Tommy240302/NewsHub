@@ -8,7 +8,7 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
     color: #1f2937;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #DFF2EB 0%, #4A628A 100%);
     min-height: 100vh;
     padding: 2rem 0;
 }
@@ -42,12 +42,12 @@ article {
     left: 0;
     width: 60px;
     height: 4px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
+    background: linear-gradient(90deg, #667eea, #4A628A);
     border-radius: 2px;
 }
 
 #category {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #DFF2EB 0%, #4A628A 100%);
     color: white;
     padding: 0.75rem 1.5rem;
     border-radius: 30px;
@@ -152,7 +152,7 @@ p#summary[style] {
 }
 
 #submmitButton {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #DFF2EB 0%, #4A628A 100%);
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -186,9 +186,9 @@ p#summary[style] {
     color: white;
     border: none;
     padding: 1.2rem 3rem;
-    font-size: 1.2rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    border-radius: 50px;
+    border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
@@ -196,6 +196,7 @@ p#summary[style] {
     letter-spacing: 0.5px;
     position: relative;
     overflow: hidden;
+    width: 300px;
 }
 
 #loginButton::before {
@@ -257,7 +258,7 @@ p#summary[style] {
     margin-left: 0;
     margin-top: 1.5rem;
     background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #4A628A;
     position: relative;
 }
 
@@ -268,7 +269,7 @@ p#summary[style] {
     top: 30px;
     width: 16px;
     height: 3px;
-    background: #667eea;
+    background: #4A628A;
     border-radius: 2px;
 }
 
@@ -304,8 +305,8 @@ p#summary[style] {
 }
 
 .comment-avatar {
-    width: 55px;
-    height: 55px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     overflow: hidden;
     border: 3px solid #e5e7eb;
@@ -347,7 +348,7 @@ p#summary[style] {
 .comment-author {
     font-weight: 600;
     color: #1f2937;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     transition: color 0.3s ease;
 }
 
@@ -368,7 +369,7 @@ p#summary[style] {
 
 .comment-content {
     color: #374151;
-    font-size: 1.05rem;
+    font-size: 0.9rem;
     line-height: 1.7;
     margin-bottom: 1.5rem;
     word-wrap: break-word;
@@ -387,7 +388,7 @@ p#summary[style] {
     color: #4b5563;
     padding: 0.7rem 1.5rem;
     border-radius: 25px;
-    font-size: 0.95rem;
+    font-size: 0.7rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -399,14 +400,13 @@ p#summary[style] {
 }
 
 .reply-button::before {
-    content: "↩️";
     font-size: 0.9rem;
     transition: transform 0.3s ease;
 }
 
 .reply-button:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-color: #667eea;
+    background: linear-gradient(135deg, #4A628A 0%, #4A628A 100%);
+    border-color: #4A628A;
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
@@ -612,11 +612,11 @@ p#summary[style] {
     background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
     border: 2px solid #e0e7ff;
     border-radius: 50px;
-    padding: 1.2rem 2rem;
+    padding: 0.8rem 1.5rem;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     width: 100%;
-    max-width: 400px;
+    max-width: 300px;
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
@@ -636,7 +636,7 @@ p#summary[style] {
     gap: 1rem;
     color: #4b5563;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.8rem;
 }
 
 .show-more-main-comments-btn:hover .main-toggle-content {
@@ -693,8 +693,8 @@ p#summary[style] {
 }
 
 .main-preview-avatar {
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     border: 3px solid #e0e7ff;
     flex-shrink: 0;
@@ -716,7 +716,7 @@ p#summary[style] {
 .main-preview-name {
     font-weight: 600;
     color: #374151;
-    font-size: 1rem;
+    font-size: 0.8rem;
     transition: color 0.3s ease;
 }
 
@@ -726,7 +726,7 @@ p#summary[style] {
 
 .main-preview-text {
     color: #6b7280;
-    font-size: 0.95rem;
+    font-size: 0.8rem;
     line-height: 1.5;
     font-style: italic;
 }
@@ -1069,10 +1069,10 @@ p#summary[style] {
 /* Empty state */
 .comments-container div[style*="textAlign: center"] {
     background: white !important;
-    padding: 3rem !important;
+    padding: 1rem !important;
     border-radius: 20px !important;
     color: #6b7280 !important;
-    font-size: 1.2rem !important;
+    font-size: 0.8rem !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
     border: 2px dashed #e5e7eb !important;
     position: relative;
@@ -1082,7 +1082,7 @@ p#summary[style] {
 .comments-container div[style*="textAlign: center"]::before {
     content: '💭';
     display: block;
-    font-size: 3rem;
+    font-size: 1rem;
     margin-bottom: 1rem;
     opacity: 0.5;
 }
